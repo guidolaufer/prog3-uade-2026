@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Material Principal — Programación 3 UADE</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a1a2e;line-height:1.68}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:#1a237e;padding:.45rem .8rem;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+nav span{font-weight:800;font-size:.9rem;color:#fff;margin-right:.5rem;white-space:nowrap}
+nav a{color:#c5cae9;text-decoration:none;font-size:.73rem;padding:.2rem .45rem;border-radius:4px;white-space:nowrap}
+nav a:hover,nav a.active{background:#283593;color:#fff}
+main{max-width:920px;margin:0 auto;padding:68px 1rem 3rem}
+h1{color:#1a237e;font-size:1.7rem;margin-bottom:.3rem}
+.sub{color:#555;font-size:.93rem;margin-bottom:1.5rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1.8rem;box-shadow:0 2px 10px rgba(0,0,0,.09)}
+.card h2{font-size:1.15rem;padding-bottom:.5rem;border-bottom:3px solid currentColor;margin-bottom:1rem}
+.steps{counter-reset:st}
+.step{display:flex;gap:.9rem;margin:.7rem 0;background:#f8faff;border-radius:8px;padding:.8rem;border-left:4px solid #3949ab}
+.sn{counter-increment:st;min-width:28px;height:28px;border-radius:50%;background:#3949ab;color:#fff;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.sb{flex:1}.sb strong{display:block;color:#1a237e;margin-bottom:.2rem}
+.tip{background:#e8eaf6;border-left:4px solid #3949ab;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.ok {background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.warn{background:#fff8e1;border-left:4px solid #f9a825;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.danger{background:#fce4d6;border-left:4px solid #bf360c;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+pre{background:#1a237e;color:#e8eaf6;padding:1rem;border-radius:8px;font-size:.87rem;margin:.6rem 0;white-space:pre-wrap;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.87rem;margin:.7rem 0}
+th{background:#1a237e;color:#fff;padding:6px 10px}
+td{padding:5px 10px;border:1px solid #ddd}
+tr:nth-child(even) td{background:#f5f7ff}
+.badge-tecnica{display:inline-block;border-radius:6px;padding:.2rem .7rem;font-size:.78rem;font-weight:700;color:#fff;margin:.2rem}
+.b-dyc{background:#1b5e20}.b-greedy{background:#e65100}.b-bt{background:#4a148c}.b-pd{background:#b71c1c}
+.quiz-item{background:#fff3e0;border:1px solid #ffe0b2;border-radius:8px;padding:.8rem 1rem;margin:.45rem 0;cursor:pointer;font-weight:600;color:#e65100;user-select:none}
+.quiz-item:hover{background:#ffe0b2}
+.quiz-item .resp{display:none;font-weight:400;color:#222;background:#fff;border-radius:6px;padding:.7rem;margin-top:.5rem;border-left:3px solid #f9a825;line-height:1.6}
+.quiz-item.open .resp{display:block}
+.quiz-item::before{content:"❓ "}.quiz-item.open::before{content:"✅ "}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:.8rem 0}
+.compare-card{border-radius:8px;padding:1rem;font-size:.88rem}
+@media(max-width:700px){nav{flex-wrap:nowrap;overflow-x:auto;padding:.3rem .5rem}nav span{font-size:.8rem}nav a{font-size:.7rem;padding:.18rem .35rem;flex-shrink:0}main{padding:58px .85rem 2rem}.card{padding:1.1rem}h1{font-size:1.35rem}pre{font-size:.78rem}table{font-size:.78rem}th,td{padding:4px 7px}}
+</style>
+</head>
+<body>
+<nav>
+  <span>💻 Prog3</span>
+  <a href="index.html">🏠 Inicio</a>
+  <a href="#complejidad">Complejidad</a>
+  <a href="#dyc">D&C</a>
+  <a href="#greedy">Greedy</a>
+  <a href="#backtracking">Backtracking</a>
+  <a href="#pd">Prog. Din.</a>
+  <a href="#comparacion">Comparación</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+<main>
+<h1>📖 Material Principal — Programación 3</h1>
+<p class="sub">Teoría y ejercicios de las 4 técnicas de diseño de algoritmos · UADE 2026</p>
+
+<!-- ====== COMPLEJIDAD ====== -->
+<div class="card" id="complejidad">
+<h2 style="color:#37474f">⏱️ Complejidad Temporal — Base de todo</h2>
+<p>Antes de ver las técnicas, hay que entender cómo medimos la <strong>eficiencia</strong> de un algoritmo. Usamos la <strong>notación O grande</strong> que describe cómo crece el tiempo de ejecución en función del tamaño de la entrada n.</p>
+
+<table>
+  <tr><th>Notación</th><th>Nombre</th><th>Ejemplo</th><th>n=1000 → ops aprox.</th></tr>
+  <tr><td><strong>O(1)</strong></td><td>Constante</td><td>Acceder un array[i]</td><td>1</td></tr>
+  <tr><td><strong>O(log n)</strong></td><td>Logarítmica</td><td>Búsqueda binaria</td><td>10</td></tr>
+  <tr><td><strong>O(n)</strong></td><td>Lineal</td><td>Recorrer un array</td><td>1.000</td></tr>
+  <tr><td><strong>O(n log n)</strong></td><td>Log-lineal</td><td>MergeSort, HeapSort</td><td>10.000</td></tr>
+  <tr><td><strong>O(n²)</strong></td><td>Cuadrática</td><td>BubbleSort, inserción</td><td>1.000.000</td></tr>
+  <tr><td><strong>O(2ⁿ)</strong></td><td>Exponencial</td><td>Subconjuntos, fuerza bruta</td><td>~10³⁰⁰</td></tr>
+  <tr><td><strong>O(n!)</strong></td><td>Factorial</td><td>Permutaciones</td><td>imposible</td></tr>
+</table>
+
+<div class="tip"><strong>Regla práctica:</strong> Dos loops anidados → O(n²). Un loop que divide a la mitad → O(log n). Un loop + dividir a la mitad → O(n log n).</div>
+
+<h3 style="color:#37474f;margin:.9rem 0 .5rem">📐 Teorema Maestro — para recursiones D&C</h3>
+<p>Cuando un algoritmo se expresa como: <code>T(n) = a·T(n/b) + f(n)</code></p>
+<p style="margin:.4rem 0;font-size:.9rem">donde a = nº subproblemas, b = factor de división, f(n) = costo de combinar</p>
+
+<table>
+  <tr><th>Caso</th><th>Condición</th><th>Resultado</th><th>Ejemplo</th></tr>
+  <tr><td><strong>Caso 1</strong></td><td>f(n) = O(n^(log_b(a) − ε))</td><td>T(n) = Θ(n^log_b(a))</td><td>T(n)=8T(n/2)+n → O(n³)</td></tr>
+  <tr><td><strong>Caso 2</strong></td><td>f(n) = Θ(n^log_b(a))</td><td>T(n) = Θ(n^log_b(a) · log n)</td><td>T(n)=2T(n/2)+n → O(n log n)</td></tr>
+  <tr><td><strong>Caso 3</strong></td><td>f(n) = Ω(n^(log_b(a) + ε))</td><td>T(n) = Θ(f(n))</td><td>T(n)=2T(n/2)+n² → O(n²)</td></tr>
+</table>
+
+<div class="ok"><strong>MergeSort:</strong> T(n) = 2T(n/2) + n → a=2, b=2, log₂2=1, f(n)=n=Θ(n¹) → <strong>Caso 2 → O(n log n)</strong></div>
+</div>
+
+<!-- ====== DIVIDE & CONQUER ====== -->
+<div class="card" id="dyc">
+<h2 style="color:#1b5e20">✂️ Divide &amp; Conquer</h2>
+<p>La idea central es simple: si el problema es grande, <strong>dividilo en partes más chicas, resolé cada parte recursivamente, y combiná los resultados</strong>.</p>
+
+<div class="compare-grid">
+  <div class="compare-card" style="background:#e8f5e9;border:1px solid #a5d6a7">
+    <strong style="color:#1b5e20">✅ Cuándo usarlo</strong><br>
+    <small>El problema se puede dividir en subproblemas <em>independientes</em> del mismo tipo. Los subproblemas no se superponen.</small>
+  </div>
+  <div class="compare-card" style="background:#ffebee;border:1px solid #ef9a9a">
+    <strong style="color:#b71c1c">❌ Cuándo NO usarlo</strong><br>
+    <small>Los subproblemas se repiten muchas veces (ahí usás PD). El costo de combinar supera el ahorro de dividir.</small>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="step">
+    <div class="sn">1</div>
+    <div class="sb"><strong>DIVIDIR</strong> Partís el problema en a subproblemas de tamaño n/b. Normalmente a=2, b=2 (dos mitades).</div>
+  </div>
+  <div class="step">
+    <div class="sn">2</div>
+    <div class="sb"><strong>CONQUISTAR</strong> Resolvés cada subproblema recursivamente. Caso base: cuando n es suficientemente pequeño, resolvés directamente.</div>
+  </div>
+  <div class="step">
+    <div class="sn">3</div>
+    <div class="sb"><strong>COMBINAR</strong> Juntás las soluciones parciales para obtener la solución del problema original. Este paso suele ser O(n).</div>
+  </div>
+</div>
+
+<h3 style="color:#1b5e20;margin:.9rem 0 .5rem">📌 Ejemplo 1 — MergeSort</h3>
+<p style="margin-bottom:.6rem">Ordenar el arreglo: <strong>[38, 27, 43, 3, 9, 82, 10]</strong></p>
+<pre>
+DIVIDIR:
+[38,27,43,3,9,82,10]
+    ↙              ↘
+[38,27,43]      [3,9,82,10]
+  ↙    ↘          ↙      ↘
+[38] [27,43]   [3,9]   [82,10]
+      ↙  ↘     ↙  ↘     ↙   ↘
+     [27][43]  [3] [9]  [82] [10]
+
+CONQUISTAR (ya son de tamaño 1, están "ordenados"):
+[27] [43] → merge → [27,43]
+[3]  [9]  → merge → [3,9]
+[82] [10] → merge → [10,82]
+
+COMBINAR:
+[38] + [27,43] → merge → [27,38,43]
+[3,9] + [10,82] → merge → [3,9,10,82]
+[27,38,43] + [3,9,10,82] → merge → [3,9,10,27,38,43,82] ✅
+</pre>
+
+<div class="tip"><strong>¿Cómo funciona el merge?</strong> Comparás el primer elemento de cada mitad, ponés el menor en el resultado, avanzás en esa mitad. Repetís hasta vaciar ambas. Costo: O(n).</div>
+
+<div class="ok"><strong>Complejidad MergeSort:</strong> T(n) = 2T(n/2) + O(n) → <strong>O(n log n)</strong> siempre (mejor, peor y promedio caso).</div>
+
+<h3 style="color:#1b5e20;margin:.9rem 0 .5rem">📌 Ejemplo 2 — Máximo Subarreglo (D&C)</h3>
+<p style="margin-bottom:.6rem">Dado un arreglo con negativos, encontrar el subarreglo contiguo de suma máxima.</p>
+<p style="margin-bottom:.6rem">Ej: <strong>[-2, 1, -3, 4, -1, 2, 1, -5, 4]</strong> → respuesta: <strong>[4,-1,2,1]</strong> = 6</p>
+<pre>
+Dividir en mitad: izq=[-2,1,-3,4] der=[-1,2,1,-5,4]
+Tres casos posibles para el subarreglo máximo:
+  1. Está completamente en la mitad izquierda
+  2. Está completamente en la mitad derecha
+  3. Cruza el punto medio (abarca parte de ambas mitades)
+
+Para el caso 3 (cruce):
+  Desde el centro hacia la izquierda: max que termina en el centro
+  Desde el centro hacia la derecha: max que empieza en el centro+1
+  Suma de ambos = subarreglo cruzado máximo
+
+Resultado = máximo de los 3 casos.
+</pre>
+
+<div class="warn"><strong>Nota:</strong> Para este problema, el algoritmo de Kadane (O(n), lineal) es más eficiente que D&C (O(n log n)). En el parcial pueden preguntar ambos y pedirte que compares.</div>
+
+<h3 style="color:#1b5e20;margin:.9rem 0 .5rem">📌 Ejemplo 3 — Búsqueda Binaria</h3>
+<pre>
+Buscar x en arreglo ordenado A[0..n-1]:
+  mid = (low + high) / 2
+  si A[mid] == x → encontrado
+  si A[mid] > x  → buscar en A[low..mid-1]  (mitad izquierda)
+  si A[mid] < x  → buscar en A[mid+1..high] (mitad derecha)
+
+T(n) = T(n/2) + O(1) → O(log n)
+</pre>
+<div class="ok">Con un arreglo de 1.000.000 elementos, la búsqueda lineal necesita hasta 1.000.000 comparaciones. La búsqueda binaria: ≤ 20 comparaciones.</div>
+</div>
+
+<!-- ====== GREEDY ====== -->
+<div class="card" id="greedy">
+<h2 style="color:#e65100">💰 Algoritmos Greedy (Voraces)</h2>
+<p>Un algoritmo greedy toma siempre la <strong>decisión localmente óptima</strong> en cada paso, esperando que esto lleve a la solución globalmente óptima.</p>
+
+<div class="compare-grid">
+  <div class="compare-card" style="background:#fff3e0;border:1px solid #ffcc80">
+    <strong style="color:#e65100">✅ Cuándo funciona</strong><br>
+    <small>El problema tiene <em>propiedad greedy</em>: la elección local óptima es parte de la solución global óptima. Ej: mochila fraccional, Huffman, Kruskal.</small>
+  </div>
+  <div class="compare-card" style="background:#ffebee;border:1px solid #ef9a9a">
+    <strong style="color:#b71c1c">❌ Cuándo NO funciona</strong><br>
+    <small>Mochila 0/1 (no fraccional), cambio de monedas con denominaciones arbitrarias. Greedy puede dar solución subóptima.</small>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="step">
+    <div class="sn">1</div>
+    <div class="sb"><strong>Elegir el mejor candidato disponible</strong> Según algún criterio de selección (mayor valor, menor costo, mayor ratio, etc.).</div>
+  </div>
+  <div class="step">
+    <div class="sn">2</div>
+    <div class="sb"><strong>Verificar factibilidad</strong> ¿Se puede incluir sin violar las restricciones? Si sí, incluirlo. Si no, descartarlo (nunca se reconsidera).</div>
+  </div>
+  <div class="step">
+    <div class="sn">3</div>
+    <div class="sb"><strong>Repetir hasta completar la solución</strong> Greedy nunca vuelve atrás.</div>
+  </div>
+</div>
+
+<h3 style="color:#e65100;margin:.9rem 0 .5rem">📌 Ejemplo 1 — Cambio de Monedas</h3>
+<p>Dar cambio de $41 con monedas de $25, $10, $5, $1.</p>
+<pre>
+Greedy: siempre tomar la moneda más grande posible.
+41 → tomo 25 → resta 16
+16 → tomo 10 → resta 6
+ 6 → tomo  5 → resta 1
+ 1 → tomo  1 → resta 0
+Resultado: 25+10+5+1 = 4 monedas ✅
+
+⚠️ Pero si las monedas fueran {1, 3, 4} y queremos cambiar 6:
+Greedy: 4 + 1 + 1 = 3 monedas
+Óptimo: 3 + 3 = 2 monedas ← Greedy falla aquí
+</pre>
+<div class="warn"><strong>Lección:</strong> Greedy funciona para monedas del sistema decimal estándar (25,10,5,1). Con denominaciones arbitrarias, puede fallar. En esos casos hay que usar Programación Dinámica.</div>
+
+<h3 style="color:#e65100;margin:.9rem 0 .5rem">📌 Ejemplo 2 — Mochila Fraccional</h3>
+<p>Items con peso y valor. La mochila soporta W=50 kg. <em>Se puede tomar fracciones</em>.</p>
+<table>
+  <tr><th>Item</th><th>Peso (kg)</th><th>Valor ($)</th><th>Ratio ($/kg)</th></tr>
+  <tr><td>A</td><td>10</td><td>60</td><td>6.0 ★</td></tr>
+  <tr><td>B</td><td>20</td><td>100</td><td>5.0</td></tr>
+  <tr><td>C</td><td>30</td><td>120</td><td>4.0</td></tr>
+</table>
+<pre>
+Greedy: ordenar por ratio descendente, tomar todo lo que quepa.
+→ Tomar A completo (10kg, $60). Resta: 40kg
+→ Tomar B completo (20kg, $100). Resta: 20kg
+→ Tomar 20/30 de C (20kg, $80). Resta: 0kg
+Valor total = 60 + 100 + 80 = $240 ✅ ÓPTIMO
+</pre>
+<div class="ok">La mochila fraccional tiene solución óptima con Greedy por ratio. La mochila 0/1 (sin fracciones) NO — ahí se usa Programación Dinámica.</div>
+
+<h3 style="color:#e65100;margin:.9rem 0 .5rem">📌 Ejemplo 3 — Código de Huffman</h3>
+<p>Compresión de datos. Asignar códigos binarios más cortos a los caracteres más frecuentes.</p>
+<pre>
+Frecuencias: a=5, b=9, c=12, d=13, e=16, f=45
+
+1. Crear un nodo hoja por cada carácter con su frecuencia.
+2. Repetir hasta tener 1 solo árbol:
+   - Tomar los 2 nodos de menor frecuencia
+   - Crear nodo padre con suma de sus frecuencias
+   - Insertar en la cola de prioridad
+
+Árbol resultante (frecuencias):
+        100
+       /    \
+     45(f)   55
+            /   \
+          25     30
+         / \    /  \
+       12(c) 13(d) 14  16(e)
+                  / \
+                5(a) 9(b)
+
+Códigos: f=0, c=100, d=101, a=1100, b=1101, e=111
+Los más frecuentes (f,e) tienen códigos más cortos ✅
+</pre>
+<div class="ok"><strong>Huffman es óptimo</strong> — ningún otro código prefijo de longitud variable puede comprimir más con estas frecuencias. Complejidad: O(n log n).</div>
+</div>
+
+<!-- ====== BACKTRACKING ====== -->
+<div class="card" id="backtracking">
+<h2 style="color:#4a148c">🔙 Backtracking</h2>
+<p>Backtracking es una forma de <strong>fuerza bruta inteligente</strong>. Explorás todas las posibilidades, pero cuando detectás que una rama no puede llevar a solución, la <strong>podás</strong> (no seguís explorando por ahí).</p>
+
+<div class="compare-grid">
+  <div class="compare-card" style="background:#f3e5f5;border:1px solid #ce93d8">
+    <strong style="color:#4a148c">✅ Cuándo usarlo</strong><br>
+    <small>Problemas de decisión o búsqueda donde hay que explorar combinaciones. N-Reinas, Sudoku, subconjuntos, coloreo de grafos.</small>
+  </div>
+  <div class="compare-card" style="background:#ffebee;border:1px solid #ef9a9a">
+    <strong style="color:#b71c1c">🐢 Desventaja</strong><br>
+    <small>Peor caso exponencial O(2ⁿ) o O(n!). La poda es clave para que sea práctico. Sin poda = fuerza bruta pura.</small>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="step">
+    <div class="sn">1</div>
+    <div class="sb"><strong>Elegir un candidato</strong> Para la posición actual, elegí un valor posible.</div>
+  </div>
+  <div class="step">
+    <div class="sn">2</div>
+    <div class="sb"><strong>Verificar validez (poda)</strong> ¿Es válido incluirlo? Si viola alguna restricción → descartarlo y probar el siguiente.</div>
+  </div>
+  <div class="step">
+    <div class="sn">3</div>
+    <div class="sb"><strong>Avanzar recursivamente</strong> Si es válido, agregarlo a la solución parcial y continuar con la siguiente posición.</div>
+  </div>
+  <div class="step">
+    <div class="sn">4</div>
+    <div class="sb"><strong>Deshacer (backtrack)</strong> Si llegaste a un punto sin solución, retirar el último candidato y probar el siguiente.</div>
+  </div>
+</div>
+
+<h3 style="color:#4a148c;margin:.9rem 0 .5rem">📌 Ejemplo 1 — N-Reinas (4 reinas)</h3>
+<p>Colocar 4 reinas en un tablero 4x4 sin que se ataquen.</p>
+<pre>
+Representación: sol[i] = columna donde va la reina de la fila i
+
+Fila 1: probar columna 1 → colocar reina en (1,1)
+  Fila 2: col 1 → ataque vertical ✗
+          col 2 → ataque diagonal ✗
+          col 3 → válido → colocar en (2,3)
+    Fila 3: col 1 → ataque diagonal ✗
+            col 2 → ataque diagonal ✗
+            col 3 → ataque vertical ✗
+            col 4 → ataque diagonal ✗
+            → SIN SOLUCIÓN → backtrack a Fila 2
+  Fila 2: col 4 → válido → colocar en (2,4)
+    Fila 3: col 2 → válido → colocar en (3,2)
+      Fila 4: col 1 → ataque diagonal ✗
+              col 2 → ataque vertical ✗
+              col 3 → ataque diagonal ✗
+              col 4 → ataque diagonal ✗
+              → backtrack a Fila 3
+    Fila 3: col 3 → ataque diagonal ✗
+            → backtrack a Fila 2
+  → backtrack a Fila 1, probar columna 2...
+
+Una solución: (1,2), (2,4), (3,1), (4,3) ✅
+Q . . .       . Q . .       . . Q .       . . . Q
+. . . Q  →   . . . Q  →  correctamente distribuidas
+. . Q .
+. Q . .
+</pre>
+
+<div class="tip"><strong>Función de poda:</strong> dos reinas se atacan si están en la misma columna, misma fila, o misma diagonal. Diagonales: |fila1-fila2| == |col1-col2|.</div>
+
+<h3 style="color:#4a148c;margin:.9rem 0 .5rem">📌 Ejemplo 2 — Subconjuntos con Suma Objetivo</h3>
+<p>Encontrar todos los subconjuntos de {3,5,6,7} que sumen 15.</p>
+<pre>
+Árbol de decisión (incluir o no incluir cada elemento):
+
+                    {}
+              ┌─────┴─────┐
+            {3}           {}
+          ┌──┴──┐       ┌──┴──┐
+        {3,5}  {3}    {5}    {}
+       suma=8  ...   suma=5  ...
+      ┌──┴──┐
+   {3,5,6} {3,5}
+   suma=14 ...
+  ┌────┴────┐
+{3,5,6,7} {3,5,6}
+suma=21✗  suma=14✗
+
+Poda: si suma parcial > 15, no seguir por esa rama.
+Solución encontrada: {3,5,7}=15 ✅, {8,7}=15 (si 8 fuera elem.)
+
+Para {3,5,6,7}: {3,5,7}=15 ✅
+</pre>
+</div>
+
+<!-- ====== PROGRAMACIÓN DINÁMICA ====== -->
+<div class="card" id="pd">
+<h2 style="color:#b71c1c">📊 Programación Dinámica (PD)</h2>
+<p>La idea central: <strong>guardar los resultados de subproblemas para no recalcularlos</strong>. Se usa cuando los subproblemas se superponen (mismo subproblema aparece muchas veces).</p>
+
+<div class="compare-grid">
+  <div class="compare-card" style="background:#ffebee;border:1px solid #ef9a9a">
+    <strong style="color:#b71c1c">✅ Condiciones para usar PD</strong><br>
+    <small><strong>Subestructura óptima:</strong> la solución óptima del problema contiene soluciones óptimas de subproblemas.<br><strong>Subproblemas superpuestos:</strong> el mismo subproblema se resuelve muchas veces.</small>
+  </div>
+  <div class="compare-card" style="background:#fce4d6;border:1px solid #ffab91">
+    <strong style="color:#bf360c">PD vs D&C</strong><br>
+    <small>D&C: subproblemas <em>independientes</em> (no se repiten) → recursión simple.<br>PD: subproblemas <em>superpuestos</em> → memoización o tabla bottom-up.</small>
+  </div>
+</div>
+
+<div class="steps">
+  <div class="step"><div class="sn">1</div><div class="sb"><strong>Definir la estructura de la solución óptima</strong> ¿Cómo se relaciona la solución de tamaño n con soluciones de tamaños menores?</div></div>
+  <div class="step"><div class="sn">2</div><div class="sb"><strong>Definir la ecuación de recurrencia</strong> dp[i] = f(dp[i-1], dp[i-2], ...). Esta es la parte más importante.</div></div>
+  <div class="step"><div class="sn">3</div><div class="sb"><strong>Inicializar casos base</strong> Los valores de dp para los casos más pequeños (dp[0], dp[1], etc.).</div></div>
+  <div class="step"><div class="sn">4</div><div class="sb"><strong>Llenar la tabla bottom-up</strong> Calcular dp[i] en orden, usando los valores ya calculados.</div></div>
+  <div class="step"><div class="sn">5</div><div class="sb"><strong>Reconstruir la solución</strong> (si hace falta) Usar la tabla para rastrear qué decisiones se tomaron.</div></div>
+</div>
+
+<h3 style="color:#b71c1c;margin:.9rem 0 .5rem">📌 Ejemplo 1 — Fibonacci</h3>
+<pre>
+Recursión ingenua: O(2ⁿ)     PD: O(n)
+
+fib(5) → fib(4) + fib(3)
+fib(4) → fib(3) + fib(2)   ← fib(3) se recalcula
+fib(3) → fib(2) + fib(1)   ← fib(2) se recalcula varias veces
+
+Con PD (tabla):
+dp[0]=0, dp[1]=1
+dp[2]=dp[1]+dp[0]=1
+dp[3]=dp[2]+dp[1]=2
+dp[4]=dp[3]+dp[2]=3
+dp[5]=dp[4]+dp[3]=5  ✅ Solo 5 operaciones vs 15 con recursión
+</pre>
+
+<h3 style="color:#b71c1c;margin:.9rem 0 .5rem">📌 Ejemplo 2 — Mochila 0/1</h3>
+<p>Items: {(peso=2,val=3), (peso=3,val=4), (peso=4,val=5), (peso=5,val=6)}. Capacidad W=5.</p>
+<pre>
+dp[i][w] = máximo valor usando los primeros i items con capacidad w
+
+Recurrencia:
+  Si peso[i] > w:  dp[i][w] = dp[i-1][w]   (no cabe, no tomar)
+  Si peso[i] ≤ w:  dp[i][w] = max(dp[i-1][w],
+                                   dp[i-1][w-peso[i]] + val[i])
+
+Tabla (filas=items, columnas=capacidad 0..5):
+     W=0  W=1  W=2  W=3  W=4  W=5
+i=0   0    0    0    0    0    0
+i=1   0    0    3    3    3    3   (item1: p=2,v=3)
+i=2   0    0    3    4    4    7   (item2: p=3,v=4)
+i=3   0    0    3    4    5    7   (item3: p=4,v=5)
+i=4   0    0    3    4    5    7   (item4: p=5,v=6)
+
+Respuesta: dp[4][5] = 7 ✅
+(tomar item1 (p=2,v=3) + item2 (p=3,v=4) = peso 5, valor 7)
+</pre>
+<div class="ok"><strong>Complejidad Mochila 0/1:</strong> O(n·W) en tiempo y espacio. Para W grande → puede ser lento (problema NP).</div>
+
+<h3 style="color:#b71c1c;margin:.9rem 0 .5rem">📌 Ejemplo 3 — Floyd-Warshall</h3>
+<p>Encontrar el camino más corto entre <em>todos</em> los pares de nodos en un grafo.</p>
+<pre>
+dist[i][j][k] = camino más corto de i a j usando solo nodos 1..k
+
+Recurrencia:
+  dist[i][j][k] = min(dist[i][j][k-1],
+                      dist[i][k][k-1] + dist[k][j][k-1])
+  "¿Conviene pasar por el nodo k?"
+
+Ejemplo: grafo con 4 nodos
+     1→2: 5  1→3: ∞  1→4: 10
+     2→3: 3  2→4: ∞  3→4: 1
+     (+ arcos inversos si no dirigido)
+
+Iteración k=3 (¿conviene pasar por nodo 3?):
+  dist[1][4] = min(10, dist[1][3]+dist[3][4]) = min(10, ∞+1) = 10
+  → con k=3: dist[1][2]+dist[2][3]=5+3=8 para 1→3
+  → luego dist[1][4] = min(10, 8+1) = 9 ✅
+
+Complejidad: O(n³)
+</pre>
+</div>
+
+<!-- ====== COMPARACIÓN ====== -->
+<div class="card" id="comparacion">
+<h2 style="color:#37474f">🔍 Comparación de Técnicas — ¿Cuándo usar cada una?</h2>
+
+<table>
+  <tr><th>Técnica</th><th>Patrón</th><th>Subproblemas</th><th>Complejidad típica</th><th>Ejemplos clave</th></tr>
+  <tr><td><span class="badge-tecnica b-dyc">D&C</span></td><td>Dividir, conquistar, combinar</td><td>Independientes</td><td>O(n log n)</td><td>MergeSort, Búsqueda Binaria</td></tr>
+  <tr><td><span class="badge-tecnica b-greedy">Greedy</span></td><td>Mejor decisión local ahora</td><td>No hay subproblemas</td><td>O(n log n)</td><td>Huffman, Mochila fraccionaria, Kruskal</td></tr>
+  <tr><td><span class="badge-tecnica b-bt">Backtracking</span></td><td>Probar todo + podar</td><td>Exploración combinatoria</td><td>O(2ⁿ) / O(n!)</td><td>N-Reinas, Subconjuntos, Sudoku</td></tr>
+  <tr><td><span class="badge-tecnica b-pd">Prog. Din.</span></td><td>Guardar subproblemas</td><td>Superpuestos</td><td>O(n²) / O(n·W)</td><td>Mochila 0/1, Floyd, LCS</td></tr>
+</table>
+
+<div class="tip">
+  <strong>Preguntas clave para elegir la técnica:</strong><br>
+  1. ¿Los subproblemas se repiten? → SÍ: PD. NO: D&C<br>
+  2. ¿La elección local óptima garantiza el óptimo global? → SÍ: Greedy<br>
+  3. ¿Hay que explorar muchas combinaciones con restricciones? → Backtracking<br>
+  4. ¿El problema se puede dividir en dos mitades independientes? → D&C
+</div>
+
+<h3 style="margin:.9rem 0 .5rem;color:#37474f">⚔️ Cambio de monedas — las 3 técnicas</h3>
+<table>
+  <tr><th>Técnica</th><th>¿Funciona?</th><th>Por qué</th></tr>
+  <tr><td>Greedy</td><td>Solo con denominaciones estándar</td><td>Propiedad greedy no siempre se cumple</td></tr>
+  <tr><td>Backtracking</td><td>Siempre (pero lento)</td><td>Explora todas las combinaciones</td></tr>
+  <tr><td>PD</td><td>Siempre (y eficiente)</td><td>dp[i] = mín monedas para valor i</td></tr>
+</table>
+</div>
+
+<!-- ====== QUIZ ====== -->
+<div class="card" id="quiz">
+<h2 style="color:#1a237e">🧠 Preguntas Teóricas — Click para respuesta</h2>
+<p style="color:#555;margin-bottom:1rem">Intentá responder antes de abrir cada una.</p>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Cuál es la diferencia entre D&C y Programación Dinámica?
+  <div class="resp">En <strong>D&C</strong>, los subproblemas son <em>independientes</em> entre sí — al resolver uno, no necesitamos el resultado del otro para calcular el primero. En <strong>PD</strong>, los subproblemas se <em>superponen</em>: el mismo subproblema aparece varias veces. PD lo resuelve una sola vez y guarda el resultado (memoización o tabla). D&C típicamente no guarda resultados.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Cuándo Greedy garantiza la solución óptima?
+  <div class="resp">Cuando el problema tiene la <strong>propiedad de elección greedy</strong>: la elección localmente óptima en cada paso es parte de alguna solución globalmente óptima. Esto se demuestra formalmente (por intercambio o por inducción). Sin esta demostración, Greedy puede dar resultados subóptimos. Ejemplos donde funciona: mochila fraccional, Huffman, Kruskal, Dijkstra. Donde NO funciona: mochila 0/1, cambio con monedas arbitrarias.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Qué es la poda en Backtracking y por qué es importante?
+  <div class="resp">La poda es el mecanismo que permite <em>descartar ramas enteras</em> del árbol de búsqueda cuando se detecta que no pueden llevar a una solución válida. Sin poda, backtracking = fuerza bruta pura (explora todo). Con buena poda, se puede reducir drásticamente el espacio de búsqueda. Ejemplo: en N-Reinas, si una reina en (1,1) ya ataca a cualquier candidato en fila 2, no tiene sentido explorar ninguna posición en fila 2 sin mover la reina de fila 1.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Cuáles son las condiciones para aplicar Programación Dinámica?
+  <div class="resp">Dos condiciones necesarias:<br><strong>1. Subestructura óptima:</strong> la solución óptima del problema original contiene soluciones óptimas de sus subproblemas. Si puedo "cortar" la solución óptima y cada parte también es óptima para su subproblema, hay subestructura óptima.<br><strong>2. Subproblemas superpuestos:</strong> al resolver el problema por recursión, los mismos subproblemas aparecen repetidamente. Si cada subproblema es único (como en D&C), PD no agrega valor.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Qué es el Teorema Maestro y cuándo se aplica?
+  <div class="resp">El Teorema Maestro da la complejidad de recursiones de la forma <strong>T(n) = a·T(n/b) + f(n)</strong>, donde a ≥ 1, b > 1, y f(n) es la función de costo de combinar. Se compara f(n) con n^(log_b(a)):<br>• Si f crece más lento → el árbol de recursión domina → O(n^log_b(a))<br>• Si son iguales → O(n^log_b(a) · log n)<br>• Si f crece más rápido → la raíz domina → O(f(n))<br>No aplica si a o b no son constantes, o si la recursión no tiene esa forma.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Por qué MergeSort es O(n log n) y BubbleSort es O(n²)?
+  <div class="resp">MergeSort divide el array a la mitad en cada nivel (log n niveles) y en cada nivel hace O(n) trabajo total de merge → O(n log n).<br>BubbleSort tiene dos loops anidados: para cada uno de los n elementos, en el peor caso compara con los n-1 restantes → O(n²). La diferencia es enorme: para n=1.000.000, MergeSort hace ~20M operaciones y BubbleSort haría 10¹² operaciones.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Por qué la mochila fraccional se resuelve con Greedy pero la 0/1 necesita PD?
+  <div class="resp">En la mochila <strong>fraccional</strong>, siempre conviene tomar el item con mayor ratio valor/peso, porque se puede tomar cualquier fracción. La elección greedy local es óptima.<br>En la mochila <strong>0/1</strong>, no se puede fraccionar: o tomás el item entero o no lo tomás. Una elección greedy puede bloquear items que juntos darían mayor valor. Se necesita PD para evaluar todas las combinaciones de forma eficiente.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Qué es la memoización y en qué se diferencia del approach bottom-up de PD?
+  <div class="resp"><strong>Memoización (top-down):</strong> escribís la recursión natural y guardás cada resultado calculado en un diccionario/array. Solo calculas los subproblemas que realmente necesitás. Más fácil de implementar pero tiene overhead de recursión.<br><strong>Bottom-up:</strong> llenás la tabla de subproblemas desde los más pequeños hasta el más grande, sin recursión. Más eficiente en práctica, sin stack overflow. La tabla siempre existe completa aunque no todos los valores se necesiten.</div>
+</div>
+
+</div>
+</main>
+<script>
+const s=document.querySelectorAll('[id]'),l=document.querySelectorAll('nav a');
+window.addEventListener('scroll',()=>{
+  let c='';s.forEach(x=>{if(window.scrollY>=x.offsetTop-85)c=x.id});
+  l.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active')});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divide & Conquer — Programación 3 UADE</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f7f0;color:#1a2e1a;line-height:1.68}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:#1b5e20;padding:.45rem .8rem;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+nav span{font-weight:800;font-size:.9rem;color:#fff;margin-right:.5rem;white-space:nowrap}
+nav a{color:#c8e6c9;text-decoration:none;font-size:.73rem;padding:.2rem .45rem;border-radius:4px;white-space:nowrap}
+nav a:hover,nav a.active{background:#2e7d32;color:#fff}
+main{max-width:920px;margin:0 auto;padding:68px 1rem 3rem}
+h1{color:#1b5e20;font-size:1.7rem;margin-bottom:.3rem}
+.sub{color:#555;font-size:.93rem;margin-bottom:1.5rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1.8rem;box-shadow:0 2px 10px rgba(0,0,0,.09)}
+.card h2{font-size:1.15rem;color:#1b5e20;padding-bottom:.5rem;border-bottom:3px solid #2e7d32;margin-bottom:1rem}
+.card h3{color:#2e7d32;font-size:1rem;margin:1rem 0 .5rem}
+.steps{counter-reset:st}
+.step{display:flex;gap:.9rem;margin:.7rem 0;background:#f1f8e9;border-radius:8px;padding:.8rem;border-left:4px solid #2e7d32}
+.sn{counter-increment:st;min-width:28px;height:28px;border-radius:50%;background:#2e7d32;color:#fff;font-weight:700;font-size:.88rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.sb{flex:1}.sb strong{display:block;color:#1b5e20;margin-bottom:.2rem}
+.tip{background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.ok {background:#dcedc8;border-left:4px solid #558b2f;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.warn{background:#fff9c4;border-left:4px solid #f9a825;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+pre{background:#1b5e20;color:#e8f5e9;padding:1rem;border-radius:8px;font-size:.87rem;margin:.6rem 0;white-space:pre-wrap;overflow-x:auto}
+code{background:#e8f5e9;color:#1b5e20;padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+table{border-collapse:collapse;width:100%;font-size:.87rem;margin:.7rem 0}
+th{background:#2e7d32;color:#fff;padding:6px 10px}
+td{padding:5px 10px;border:1px solid #c8e6c9}
+tr:nth-child(even) td{background:#f1f8e9}
+.quiz-item{background:#f1f8e9;border:1px solid #a5d6a7;border-radius:8px;padding:.8rem 1rem;margin:.45rem 0;cursor:pointer;font-weight:600;color:#2e7d32;user-select:none}
+.quiz-item:hover{background:#dcedc8}
+.quiz-item .resp{display:none;font-weight:400;color:#222;background:#fff;border-radius:6px;padding:.7rem;margin-top:.5rem;border-left:3px solid #2e7d32;line-height:1.6}
+.quiz-item.open .resp{display:block}
+.quiz-item::before{content:"❓ "}.quiz-item.open::before{content:"✅ "}
+.ej-header{background:#1b5e20;color:#fff;border-radius:8px 8px 0 0;padding:.6rem 1rem;font-weight:700;font-size:.95rem;margin-top:1.2rem}
+.ej-body{border:2px solid #1b5e20;border-top:none;border-radius:0 0 8px 8px;padding:1rem;margin-bottom:.5rem}
+@media(max-width:700px){nav{flex-wrap:nowrap;overflow-x:auto;padding:.3rem .5rem}nav span{font-size:.8rem}nav a{font-size:.7rem;padding:.18rem .35rem;flex-shrink:0}main{padding:58px .85rem 2rem}.card{padding:1.1rem}h1{font-size:1.35rem}pre{font-size:.78rem}table{font-size:.78rem}}
+</style>
+</head>
+<body>
+<nav>
+  <span>✂️ D&C</span>
+  <a href="index.html">🏠 Inicio</a>
+  <a href="#mergesort">MergeSort</a>
+  <a href="#quicksort">QuickSort</a>
+  <a href="#binaria">Búsqueda Binaria</a>
+  <a href="#subarray">Subarreglo Máx.</a>
+  <a href="#maestro">T. Maestro</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+<main>
+<h1>✂️ Divide &amp; Conquer — Ejercicios Resueltos</h1>
+<p class="sub">Dividir → Conquistar → Combinar · Con análisis de complejidad paso a paso</p>
+
+<!-- MERGESORT -->
+<div class="card" id="mergesort">
+<h2>📌 Ejercicio 1 — MergeSort completo</h2>
+<p><strong>Problema:</strong> Ordenar el array <code>[64, 34, 25, 12, 22, 11, 90]</code> usando MergeSort. Mostrar cada paso y calcular la complejidad.</p>
+
+<h3>Paso 1 — DIVIDIR (recursivamente hasta arrays de tamaño 1)</h3>
+<pre>
+Nivel 0: [64, 34, 25, 12, 22, 11, 90]
+          ↙                          ↘
+Nivel 1: [64, 34, 25]            [12, 22, 11, 90]
+          ↙         ↘              ↙             ↘
+Nivel 2: [64]   [34, 25]       [12, 22]       [11, 90]
+                 ↙    ↘         ↙    ↘         ↙    ↘
+Nivel 3:        [34] [25]     [12]  [22]     [11]  [90]
+
+(arrays de tamaño 1 = caso base, ya están "ordenados")
+</pre>
+
+<h3>Paso 2 — CONQUISTAR + COMBINAR (merge de abajo hacia arriba)</h3>
+<pre>
+Nivel 3 → 2:
+  merge([34],[25]):   comparar 34 vs 25 → [25, 34]
+  merge([12],[22]):   comparar 12 vs 22 → [12, 22]
+  merge([11],[90]):   comparar 11 vs 90 → [11, 90]
+
+Nivel 2 → 1:
+  merge([64],[25,34]):
+    64 vs 25 → tomar 25 → resto [64] vs [34]
+    64 vs 34 → tomar 34 → resto [64] vs []
+    agregar 64 → [25, 34, 64]
+  
+  merge([12,22],[11,90]):
+    12 vs 11 → tomar 11 → [12,22] vs [90]
+    12 vs 90 → tomar 12 → [22] vs [90]
+    22 vs 90 → tomar 22 → [] vs [90]
+    agregar 90 → [11, 12, 22, 90]
+
+Nivel 1 → 0 (resultado final):
+  merge([25,34,64],[11,12,22,90]):
+    25 vs 11 → 11
+    25 vs 12 → 12
+    25 vs 22 → 22
+    25 vs 90 → 25
+    34 vs 90 → 34
+    64 vs 90 → 64
+    agregar 90
+    → [11, 12, 22, 25, 34, 64, 90] ✅
+</pre>
+
+<h3>Función de merge — ¿cómo funciona exactamente?</h3>
+<pre>
+merge(izq[], der[]):
+  resultado = []
+  i = 0, j = 0
+  
+  mientras i < len(izq) Y j < len(der):
+    si izq[i] ≤ der[j]:
+      agregar izq[i] a resultado
+      i++
+    sino:
+      agregar der[j] a resultado
+      j++
+  
+  agregar el resto de izq[i..] al resultado
+  agregar el resto de der[j..] al resultado
+  return resultado
+</pre>
+<div class="tip"><strong>¿Por qué funciona?</strong> Como ambos subarrays ya están ordenados, basta con comparar los primeros elementos de cada uno. El menor va al resultado y avanzamos en ese array. El costo es O(n) por cada merge.</div>
+
+<h3>Análisis de complejidad</h3>
+<table>
+  <tr><th>Nivel</th><th>Cantidad de merges</th><th>Costo por merge</th><th>Costo nivel</th></tr>
+  <tr><td>3 (hojas)</td><td>—</td><td>—</td><td>O(n/2) = O(1) c/u</td></tr>
+  <tr><td>2</td><td>n/2 merges de 2 elem</td><td>O(2)</td><td>O(n)</td></tr>
+  <tr><td>1</td><td>n/4 merges de 4 elem</td><td>O(4)</td><td>O(n)</td></tr>
+  <tr><td>0</td><td>1 merge de n elem</td><td>O(n)</td><td>O(n)</td></tr>
+</table>
+<div class="ok"><strong>Total:</strong> log₂(n) niveles × O(n) por nivel = <strong>O(n log n)</strong> — siempre, sin importar el orden inicial.</div>
+</div>
+
+<!-- QUICKSORT -->
+<div class="card" id="quicksort">
+<h2>📌 Ejercicio 2 — QuickSort</h2>
+<p><strong>Problema:</strong> Ordenar <code>[10, 80, 30, 90, 40, 50, 70]</code> con QuickSort. Elegir el último elemento como pivot.</p>
+
+<h3>Concepto clave — Partición</h3>
+<pre>
+La partición coloca el pivot en su posición final y divide:
+  - Elementos menores al pivot → quedan a la izquierda
+  - Elementos mayores al pivot → quedan a la derecha
+
+Array: [10, 80, 30, 90, 40, 50, 70]
+Pivot: 70 (último elemento)
+
+Recorremos con índice i=-1 y j de 0 a n-2:
+  j=0: A[0]=10 ≤ 70 → i++ (i=0), swap(A[0],A[0]) → [10,80,30,90,40,50,70]
+  j=1: A[1]=80 > 70  → no hacer nada
+  j=2: A[2]=30 ≤ 70 → i++ (i=1), swap(A[1],A[2]) → [10,30,80,90,40,50,70]
+  j=3: A[3]=90 > 70  → no hacer nada
+  j=4: A[4]=40 ≤ 70 → i++ (i=2), swap(A[2],A[4]) → [10,30,40,90,80,50,70]
+  j=5: A[5]=50 ≤ 70 → i++ (i=3), swap(A[3],A[5]) → [10,30,40,50,80,90,70]
+
+Final: swap(A[i+1], pivot) → swap(A[4], A[6])
+Resultado: [10,30,40,50,70,80,90] — pivot 70 en posición 4 ✅
+</pre>
+
+<h3>Recursión sobre las dos particiones</h3>
+<pre>
+[10,30,40,50] | 70 | [80,90]
+    ↓                   ↓
+  ordenar             ordenar
+  (recursión)         (recursión)
+
+QuickSort([10,30,40,50]):
+  pivot=50 → [10,30,40] | 50 | []
+  QuickSort([10,30,40]): pivot=40 → [10,30]|40|[]
+  → ya ordenado ✅
+
+QuickSort([80,90]):
+  pivot=90 → [80]|90|[] ✅
+
+Resultado final: [10,30,40,50,70,80,90] ✅
+</pre>
+
+<h3>Complejidad QuickSort</h3>
+<table>
+  <tr><th>Caso</th><th>Cuándo ocurre</th><th>Complejidad</th></tr>
+  <tr><td>Mejor caso</td><td>Pivot siempre parte al medio</td><td>O(n log n)</td></tr>
+  <tr><td>Caso promedio</td><td>Pivot aleatorio</td><td>O(n log n)</td></tr>
+  <tr><td>Peor caso</td><td>Array ya ordenado + pivot = extremo</td><td>O(n²)</td></tr>
+</table>
+<div class="warn"><strong>¿Por qué el peor caso es O(n²)?</strong> Si el pivot siempre es el mínimo o máximo, una partición tiene 0 elementos y la otra n-1. Se crean n niveles de recursión en vez de log n, con O(n) trabajo cada uno.</div>
+<div class="ok"><strong>Ventaja de QuickSort sobre MergeSort:</strong> O(1) de memoria extra (in-place). MergeSort necesita O(n) de memoria auxiliar para los arrays temporales.</div>
+</div>
+
+<!-- BÚSQUEDA BINARIA -->
+<div class="card" id="binaria">
+<h2>📌 Ejercicio 3 — Búsqueda Binaria</h2>
+<p><strong>Problema:</strong> Buscar el valor <code>23</code> en el array ordenado <code>[2, 5, 8, 12, 16, 23, 38, 56, 72, 91]</code>.</p>
+
+<h3>Traza paso a paso</h3>
+<pre>
+Array: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]
+Índices: 0  1  2   3   4   5   6   7   8   9
+Buscar: 23
+
+Iteración 1:
+  low=0, high=9, mid=4
+  A[4]=16 < 23 → buscar en la mitad derecha
+  low = mid+1 = 5
+
+Iteración 2:
+  low=5, high=9, mid=7
+  A[7]=56 > 23 → buscar en la mitad izquierda
+  high = mid-1 = 6
+
+Iteración 3:
+  low=5, high=6, mid=5
+  A[5]=23 == 23 → ¡ENCONTRADO en posición 5! ✅
+
+Total: 3 comparaciones para encontrar en un array de 10 elementos.
+Con búsqueda lineal, podría haber necesitado hasta 10 comparaciones.
+</pre>
+
+<h3>¿Cuántas comparaciones en el peor caso?</h3>
+<pre>
+n=10  → log₂(10) ≈ 3.32 → 4 comparaciones como máximo
+n=100 → log₂(100) ≈ 6.6 → 7 comparaciones
+n=1.000.000 → log₂(10⁶) ≈ 20 comparaciones
+
+Búsqueda lineal: hasta n comparaciones = hasta 1.000.000
+Búsqueda binaria: hasta 20 comparaciones ← enormemente mejor
+</pre>
+
+<div class="tip"><strong>Condición obligatoria:</strong> el array DEBE estar ordenado. Si no lo está, hay que ordenarlo primero (O(n log n)) y luego buscar (O(log n)). Si buscás una sola vez, puede no valer la pena.</div>
+
+<h3>Análisis Teorema Maestro</h3>
+<pre>
+T(n) = 1·T(n/2) + O(1)
+a=1, b=2, f(n)=O(1)
+log_b(a) = log₂(1) = 0
+f(n) = O(1) = O(n⁰) = Θ(n^log_b(a)) → Caso 2
+T(n) = Θ(n⁰ · log n) = Θ(log n) ✅
+</pre>
+</div>
+
+<!-- SUBARREGLO MÁXIMO -->
+<div class="card" id="subarray">
+<h2>📌 Ejercicio 4 — Subarreglo de Suma Máxima (D&C)</h2>
+<p><strong>Problema:</strong> Encontrar el subarreglo contiguo de suma máxima en <code>[-2, 1, -3, 4, -1, 2, 1, -5, 4]</code>.</p>
+<p style="margin:.4rem 0;color:#555;font-size:.9rem">Respuesta esperada: <code>[4, -1, 2, 1]</code> con suma <strong>6</strong>.</p>
+
+<h3>Estrategia D&C — 3 casos posibles</h3>
+<pre>
+Array: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+Índices:  0  1   2  3   4  5  6   7  8
+                      ↑
+               Punto medio (mid=4)
+
+El subarreglo máximo puede estar en:
+  1. La mitad izquierda: índices [0..4]
+  2. La mitad derecha: índices [5..8]
+  3. Cruzando el medio: parte del [0..4] + parte del [5..8]
+</pre>
+
+<h3>Calcular el cruce del medio</h3>
+<pre>
+DESDE mid HACIA LA IZQUIERDA (acumular suma):
+  i=4: -1         suma=-1
+  i=3:  4         suma=3  ← máximo izquierdo
+  i=2: -3         suma=0
+  i=1:  1         suma=1
+  i=0: -2         suma=-1
+  max_izq = 3, en índice i=3
+
+DESDE mid+1 HACIA LA DERECHA:
+  j=5:  2         suma=2
+  j=6:  1         suma=3
+  j=7: -5         suma=-2
+  j=8:  4         suma=2
+  max_der = 3, en índice j=6
+
+Subarreglo cruzado: [3..6] → [4,-1,2,1], suma = 3+3 = 6 ✅
+</pre>
+
+<h3>Comparación con el algoritmo de Kadane (O(n))</h3>
+<pre>
+Kadane's Algorithm — para cada posición, decidir si:
+  a) continuar el subarreglo anterior
+  b) empezar uno nuevo desde acá
+
+Array: [-2,  1, -3,  4, -1,  2,  1, -5,  4]
+current: -2   1  -2   4   3   5   6   1   5
+max:     -2   1   1   4   4   5   6   6   6
+
+- current[i] = max(A[i], current[i-1] + A[i])
+- max = max de todos los current
+
+Resultado: 6 (mismo que D&C), con O(n) ← más eficiente
+</pre>
+<div class="warn"><strong>Importante para el parcial:</strong> Kadane es O(n) y D&C es O(n log n). Kadane es siempre mejor para este problema específico. D&C se estudia como ejemplo de la técnica. Te pueden preguntar ambos y pedir que los compares.</div>
+
+<h3>Recurrencia D&C — Teorema Maestro</h3>
+<pre>
+T(n) = 2T(n/2) + Θ(n)
+a=2, b=2, log₂(2)=1
+f(n) = Θ(n) = Θ(n¹) = Θ(n^log_b(a)) → Caso 2
+T(n) = Θ(n log n)
+</pre>
+</div>
+
+<!-- TEOREMA MAESTRO EJERCICIOS -->
+<div class="card" id="maestro">
+<h2>📌 Ejercicio 5 — Teorema Maestro: Práctica</h2>
+<p>Determinar la complejidad de cada recurrencia.</p>
+
+<div class="ej-header">Recurrencia A: T(n) = 4T(n/2) + n</div>
+<div class="ej-body">
+<pre>
+a=4, b=2, f(n)=n
+log_b(a) = log₂(4) = 2
+f(n) = n = O(n¹)
+¿n¹ vs n²?  → n¹ = O(n^(2-ε)) con ε=1 → Caso 1
+T(n) = Θ(n²)
+</pre>
+<div class="ok">Interpretación: el costo de combinar (n) es despreciable frente al costo de las llamadas recursivas (n²). Los subproblemas dominan.</div>
+</div>
+
+<div class="ej-header">Recurrencia B: T(n) = 2T(n/2) + n log n</div>
+<div class="ej-body">
+<pre>
+a=2, b=2, f(n)=n log n
+log_b(a) = log₂(2) = 1
+f(n) = n log n vs n^1 = n
+¿n log n vs n? → n log n crece más rápido que n
+¿Es Caso 3? f(n) = Ω(n^(1+ε)) → necesitamos f(n) = Ω(n^(1+ε))
+n log n vs n^(1+ε): para cualquier ε>0, n^(1+ε) crece más que n log n
+→ Caso 3 NO aplica directamente (log n crece más lento que cualquier polinomio)
+
+Resultado: T(n) = Θ(n log² n)  ← caso especial del Teorema Maestro
+</pre>
+<div class="warn">No siempre aplica el Teorema Maestro directamente. Este caso queda fuera de los 3 casos estándar.</div>
+</div>
+
+<div class="ej-header">Recurrencia C: T(n) = 3T(n/4) + n²</div>
+<div class="ej-body">
+<pre>
+a=3, b=4, f(n)=n²
+log_b(a) = log₄(3) ≈ 0.79
+f(n) = n² vs n^0.79
+¿n² = Ω(n^(0.79+ε))? → SÍ con ε=1 (n² >> n^0.79) → Caso 3
+Verificar condición de regularidad: a·f(n/b) ≤ c·f(n)
+  3·(n/4)² = 3n²/16 ≤ (3/16)·n² ✅ (c=3/16 < 1)
+T(n) = Θ(n²)
+</pre>
+<div class="ok">El costo de combinar (n²) domina sobre los subproblemas. La raíz del árbol de recursión concentra la mayor parte del trabajo.</div>
+</div>
+
+<div class="ej-header">Recurrencia D: T(n) = 2T(n/2) + n (MergeSort)</div>
+<div class="ej-body">
+<pre>
+a=2, b=2, f(n)=n
+log_b(a) = log₂(2) = 1
+f(n) = n = Θ(n^1) = Θ(n^log_b(a)) → Caso 2
+T(n) = Θ(n log n) ✅
+</pre>
+<div class="ok">El trabajo en cada nivel es siempre O(n). Con log n niveles → O(n log n) total.</div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div class="card" id="quiz">
+<h2>🧠 Quiz — Divide &amp; Conquer</h2>
+<p style="color:#555;margin-bottom:1rem">Intentá responder antes de ver la solución.</p>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Cuál es la complejidad de MergeSort y por qué no puede ser mejor que O(n log n)?
+  <div class="resp">MergeSort es <strong>O(n log n)</strong> en todos los casos. No puede ser mejor porque hay un límite inferior teórico: para ordenar n elementos por comparaciones, cualquier algoritmo necesita al menos Ω(n log n) comparaciones en el peor caso. Esto se demuestra con el árbol de decisión: hay n! permutaciones posibles del input, el árbol de decisión tiene al menos n! hojas, y un árbol binario de h hojas tiene altura ≥ log₂(n!) ≈ n log n (por la aproximación de Stirling).</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿En qué caso QuickSort tiene complejidad O(n²)? ¿Cómo se evita?
+  <div class="resp">El peor caso de QuickSort ocurre cuando el pivot elegido siempre es el mínimo o máximo del subarreglo. Esto pasa con array ya ordenado (ascendente o descendente) si siempre tomamos el primer o último elemento como pivot. Se evita con: <strong>(1) pivot aleatorio</strong> — elegir un índice random; <strong>(2) mediana de 3</strong> — elegir la mediana entre el primero, el del medio y el último; <strong>(3) shuffle previo</strong> — mezclar el array aleatoriamente antes de ordenar.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Cómo se aplica el Teorema Maestro? ¿Cuándo NO se puede aplicar?
+  <div class="resp">El Teorema Maestro aplica a recursiones de la forma <strong>T(n) = aT(n/b) + f(n)</strong> con a≥1, b>1 constantes. Se compara f(n) con n^(log_b a): si f crece más lento → Caso 1 → O(n^log_b(a)); si son equivalentes → Caso 2 → O(n^log_b(a) · log n); si f crece más rápido → Caso 3 → O(f(n)).<br><br>NO se puede aplicar cuando: a o b no son constantes (ej: T(n)=2T(n-1)+1), n/b no es exacto (ej: Fibonacci T(n)=T(n-1)+T(n-2)), hay condiciones adicionales que no se cumplen, o f(n) cae entre dos casos (como n log n).</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Por qué la búsqueda binaria requiere que el array esté ordenado?
+  <div class="resp">La búsqueda binaria explota la propiedad de que en un array ordenado, si el elemento buscado es menor que A[mid], definitivamente NO puede estar en la mitad derecha (y viceversa). Esta garantía solo existe si el array está ordenado. En un array desordenado, saber que A[mid] > x no dice nada sobre dónde está x.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">Dado T(n) = 8T(n/2) + n², ¿cuál es la complejidad? Justificar.
+  <div class="resp">a=8, b=2, f(n)=n².<br>log_b(a) = log₂(8) = 3.<br>f(n) = n² vs n³: n² = O(n^(3-ε)) con ε=1 → <strong>Caso 1</strong>.<br>T(n) = Θ(n³).<br>Interpretación: aunque el costo de combinar es n², los subproblemas generan tanto trabajo que el costo total es n³ — los subproblemas dominan.</div>
+</div>
+
+</div>
+</main>
+<script>
+const s=document.querySelectorAll('[id]'),l=document.querySelectorAll('nav a');
+window.addEventListener('scroll',()=>{
+  let c='';s.forEach(x=>{if(window.scrollY>=x.offsetTop-85)c=x.id});
+  l.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active')});
+});
+</script>
+</body>
+</html>

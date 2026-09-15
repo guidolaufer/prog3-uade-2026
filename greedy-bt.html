@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greedy & Backtracking — Programación 3 UADE</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff8f0;color:#2e1a00;line-height:1.68}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:#e65100;padding:.45rem .8rem;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+nav span{font-weight:800;font-size:.9rem;color:#fff;margin-right:.5rem;white-space:nowrap}
+nav a{color:#ffe0b2;text-decoration:none;font-size:.73rem;padding:.2rem .45rem;border-radius:4px;white-space:nowrap}
+nav a:hover,nav a.active{background:#bf360c;color:#fff}
+main{max-width:920px;margin:0 auto;padding:68px 1rem 3rem}
+h1{color:#e65100;font-size:1.7rem;margin-bottom:.3rem}
+.sub{color:#555;font-size:.93rem;margin-bottom:1.5rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1.8rem;box-shadow:0 2px 10px rgba(0,0,0,.09)}
+.card h2{font-size:1.15rem;padding-bottom:.5rem;border-bottom:3px solid currentColor;margin-bottom:1rem}
+.card h3{font-size:1rem;margin:1rem 0 .5rem}
+.tip{background:#fff3e0;border-left:4px solid #e65100;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.ok{background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.warn{background:#fff9c4;border-left:4px solid #f9a825;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.danger{background:#fce4d6;border-left:4px solid #bf360c;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+pre{background:#3e2723;color:#ffccbc;padding:1rem;border-radius:8px;font-size:.87rem;margin:.6rem 0;white-space:pre-wrap;overflow-x:auto}
+code{background:#fff3e0;color:#bf360c;padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+table{border-collapse:collapse;width:100%;font-size:.87rem;margin:.7rem 0}
+th{background:#e65100;color:#fff;padding:6px 10px}
+td{padding:5px 10px;border:1px solid #ffccbc}
+tr:nth-child(even) td{background:#fff8f0}
+.quiz-item{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:.8rem 1rem;margin:.45rem 0;cursor:pointer;font-weight:600;color:#e65100;user-select:none}
+.quiz-item:hover{background:#ffe0b2}
+.quiz-item .resp{display:none;font-weight:400;color:#222;background:#fff;border-radius:6px;padding:.7rem;margin-top:.5rem;border-left:3px solid #e65100;line-height:1.6}
+.quiz-item.open .resp{display:block}
+.quiz-item::before{content:"❓ "}.quiz-item.open::before{content:"✅ "}
+.section-label{display:inline-block;padding:.3rem .9rem;border-radius:20px;font-size:.8rem;font-weight:700;color:#fff;margin:.3rem 0 1rem}
+.greedy-label{background:#e65100}
+.bt-label{background:#4a148c}
+.bt-card h2{border-bottom-color:#4a148c}
+pre.bt{background:#1a0033;color:#e1bee7}
+.bt-q{background:#f3e5f5;border:1px solid #ce93d8;border-radius:8px;padding:.8rem 1rem;margin:.45rem 0;cursor:pointer;font-weight:600;color:#4a148c;user-select:none}
+.bt-q:hover{background:#e1bee7}
+.bt-q .resp{display:none;font-weight:400;color:#222;background:#fff;border-radius:6px;padding:.7rem;margin-top:.5rem;border-left:3px solid #4a148c;line-height:1.6}
+.bt-q.open .resp{display:block}
+.bt-q::before{content:"❓ "}.bt-q.open::before{content:"✅ "}
+@media(max-width:700px){nav{flex-wrap:nowrap;overflow-x:auto;padding:.3rem .5rem}nav span{font-size:.8rem}nav a{font-size:.7rem;padding:.18rem .35rem;flex-shrink:0}main{padding:58px .85rem 2rem}.card{padding:1.1rem}h1{font-size:1.35rem}pre{font-size:.78rem}table{font-size:.78rem}}
+</style>
+</head>
+<body>
+<nav>
+  <span>💰🔙 Greedy &amp; BT</span>
+  <a href="index.html">🏠 Inicio</a>
+  <a href="#monedas">Monedas</a>
+  <a href="#actividades">Actividades</a>
+  <a href="#huffman">Huffman</a>
+  <a href="#mochila-g">Mochila G</a>
+  <a href="#nreinas">N-Reinas</a>
+  <a href="#subsets">Subsets</a>
+  <a href="#coloring">Coloreo</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+<main>
+<h1>💰 Greedy &amp; 🔙 Backtracking — Ejercicios</h1>
+<p class="sub">Decisiones locales óptimas y exploración con poda · UADE 2026</p>
+
+<!-- ===== GREEDY ===== -->
+<div class="card" id="monedas">
+<h2 style="color:#e65100">💰 Greedy — Ejercicio 1: Cambio de Monedas</h2>
+<span class="section-label greedy-label">GREEDY</span>
+
+<p><strong>Problema A:</strong> Dar cambio de $87 usando la menor cantidad de monedas del sistema argentino: {50, 25, 10, 5, 1}.</p>
+
+<h3 style="color:#e65100">Solución Greedy — siempre tomar la moneda más grande posible</h3>
+<pre>
+Monto restante: 87
+  Paso 1: 87 ≥ 50 → tomar 1 moneda de $50. Resta: 37
+  Paso 2: 37 ≥ 25 → tomar 1 moneda de $25. Resta: 12
+  Paso 3: 12 ≥ 10 → tomar 1 moneda de $10. Resta:  2
+  Paso 4:  2 <  5 → saltar
+  Paso 5:  2 ≥  1 → tomar 1 moneda de $1.  Resta:  1
+  Paso 6:  1 ≥  1 → tomar 1 moneda de $1.  Resta:  0
+
+Resultado: [50, 25, 10, 1, 1] = 5 monedas ✅
+</pre>
+
+<p style="margin-top:.8rem"><strong>Problema B:</strong> Dar cambio de $11 con monedas {1, 3, 4}. ¿Greedy es óptimo?</p>
+<pre>
+Greedy (mayor moneda primero):
+  11 ≥ 4 → tomar 4. Resta: 7
+   7 ≥ 4 → tomar 4. Resta: 3
+   3 ≥ 3 → tomar 3. Resta: 0
+Resultado Greedy: [4, 4, 3] = 3 monedas ✅ (óptimo en este caso)
+
+Pero para cambio de 6 con {1, 3, 4}:
+Greedy: 4 + 1 + 1 = 3 monedas
+Óptimo: 3 + 3   = 2 monedas ← Greedy falla aquí ❌
+</pre>
+<div class="danger"><strong>Conclusión:</strong> Greedy funciona para el sistema de monedas estándar (50, 25, 10, 5, 1) porque tiene la propiedad de que siempre conviene tomar la denominación mayor. Con denominaciones arbitrarias, puede fallar. Para garantizar óptimo con cualquier denominación → usar Programación Dinámica.</div>
+</div>
+
+<div class="card" id="actividades">
+<h2 style="color:#e65100">💰 Greedy — Ejercicio 2: Selección de Actividades</h2>
+<span class="section-label greedy-label">GREEDY</span>
+<p><strong>Problema:</strong> Tenés un salón de conferencias para todo el día. Varias actividades quieren usar el salón. Cada actividad tiene hora de inicio y fin. Elegir la máxima cantidad de actividades sin superposición.</p>
+
+<table>
+  <tr><th>Actividad</th><th>Inicio</th><th>Fin</th></tr>
+  <tr><td>A1</td><td>1</td><td>4</td></tr>
+  <tr><td>A2</td><td>3</td><td>5</td></tr>
+  <tr><td>A3</td><td>0</td><td>6</td></tr>
+  <tr><td>A4</td><td>5</td><td>7</td></tr>
+  <tr><td>A5</td><td>3</td><td>9</td></tr>
+  <tr><td>A6</td><td>6</td><td>10</td></tr>
+  <tr><td>A7</td><td>8</td><td>11</td></tr>
+  <tr><td>A8</td><td>8</td><td>12</td></tr>
+  <tr><td>A9</td><td>2</td><td>14</td></tr>
+  <tr><td>A10</td><td>12</td><td>16</td></tr>
+</table>
+
+<h3 style="color:#e65100">Estrategia Greedy: ordenar por hora de FIN (no de inicio)</h3>
+<pre>
+¿Por qué ordenar por fin? → La actividad que termina antes libera el salón
+antes, dejando más espacio para las siguientes.
+
+Ordenado por fin: A1(1-4), A2(3-5), A4(5-7), A6(6-10), A7(8-11), A8(8-12), A10(12-16), A9(2-14), A3(0-6), A5(3-9)
+Orden correcto: A1(1,4), A2(3,5), A4(5,7), A6(6,10), A7(8,11), A8(8,12), A9(2,14), A10(12,16)
+
+Paso 1: tomar A1 (termina en 4). último_fin = 4
+Paso 2: A2 empieza en 3 < 4 → solapamiento → descartar
+Paso 3: A4 empieza en 5 ≥ 4 → TOMAR. último_fin = 7
+Paso 4: A6 empieza en 6 < 7 → descartar
+Paso 5: A7 empieza en 8 ≥ 7 → TOMAR. último_fin = 11
+Paso 6: A8 empieza en 8 < 11 → descartar
+Paso 7: A9 empieza en 2 < 11 → descartar
+Paso 8: A10 empieza en 12 ≥ 11 → TOMAR. último_fin = 16
+
+Resultado: {A1, A4, A7, A10} = 4 actividades ✅ ÓPTIMO
+</pre>
+<div class="ok"><strong>Complejidad:</strong> O(n log n) para ordenar + O(n) para seleccionar = O(n log n) total.</div>
+</div>
+
+<div class="card" id="huffman">
+<h2 style="color:#e65100">💰 Greedy — Ejercicio 3: Código de Huffman</h2>
+<span class="section-label greedy-label">GREEDY</span>
+<p><strong>Problema:</strong> Comprimir un texto con las frecuencias: a=45, b=13, c=12, d=16, e=9, f=5.</p>
+
+<h3 style="color:#e65100">Construcción del árbol de Huffman</h3>
+<pre>
+Cola de prioridad (mínimo primero):
+Inicial: f=5, e=9, b=13, c=12, d=16, a=45
+
+Iteración 1: tomar f(5) y e(9) → crear nodo(14) con hijos f,e
+Cola: b=13, c=12, nodo(14), d=16, a=45
+Reordenar: c=12, b=13, nodo(14), d=16, a=45
+
+Iteración 2: tomar c(12) y b(13) → crear nodo(25) con hijos c,b
+Cola: nodo(14), d=16, nodo(25), a=45
+Reordenar: nodo(14), d=16, nodo(25), a=45
+
+Iteración 3: tomar nodo(14) y d(16) → crear nodo(30)
+Cola: nodo(25), nodo(30), a=45
+
+Iteración 4: tomar nodo(25) y nodo(30) → crear nodo(55)
+Cola: a=45, nodo(55)
+
+Iteración 5: tomar a(45) y nodo(55) → crear RAÍZ(100)
+</pre>
+
+<pre>
+Árbol final:
+           [100]
+          /     \
+       [45:a]   [55]
+                /   \
+             [25]   [30]
+             / \    /  \
+           [c] [b] [14] [d]
+               12  13  / \  16
+                    [f] [e]
+                     5   9
+
+Asignar 0 a rama izquierda, 1 a rama derecha:
+  a → 0
+  c → 100
+  b → 101
+  f → 1100
+  e → 1101
+  d → 111
+</pre>
+
+<h3 style="color:#e65100">Verificación: ¿cuántos bits ahorramos?</h3>
+<table>
+  <tr><th>Carácter</th><th>Freq</th><th>Código</th><th>Bits</th><th>Total bits</th></tr>
+  <tr><td>a</td><td>45</td><td>0</td><td>1</td><td>45</td></tr>
+  <tr><td>b</td><td>13</td><td>101</td><td>3</td><td>39</td></tr>
+  <tr><td>c</td><td>12</td><td>100</td><td>3</td><td>36</td></tr>
+  <tr><td>d</td><td>16</td><td>111</td><td>3</td><td>48</td></tr>
+  <tr><td>e</td><td>9</td><td>1101</td><td>4</td><td>36</td></tr>
+  <tr><td>f</td><td>5</td><td>1100</td><td>4</td><td>20</td></tr>
+  <tr><td><strong>TOTAL</strong></td><td>100</td><td>—</td><td>—</td><td><strong>224 bits</strong></td></tr>
+</table>
+<div class="ok">Con código fijo de 3 bits para 6 caracteres: 100×3=300 bits. Huffman usa 224 bits = <strong>25% de ahorro</strong>.</div>
+</div>
+
+<div class="card" id="mochila-g">
+<h2 style="color:#e65100">💰 Greedy — Ejercicio 4: Mochila Fraccional</h2>
+<span class="section-label greedy-label">GREEDY</span>
+<p><strong>Problema:</strong> Mochila con capacidad W=50 kg. Items (se pueden fraccionar):</p>
+<table>
+  <tr><th>Item</th><th>Peso (kg)</th><th>Valor ($)</th><th>Ratio $/kg</th></tr>
+  <tr><td>A</td><td>10</td><td>60</td><td><strong>6.0 ★</strong></td></tr>
+  <tr><td>B</td><td>40</td><td>40</td><td>1.0</td></tr>
+  <tr><td>C</td><td>20</td><td>100</td><td><strong>5.0 ★★</strong></td></tr>
+  <tr><td>D</td><td>24</td><td>120</td><td><strong>5.0 ★★</strong></td></tr>
+</table>
+<pre>
+Ordenar por ratio descendente: A(6.0), C(5.0), D(5.0), B(1.0)
+Capacidad disponible: 50 kg
+
+Tomar A (10kg, ratio=6.0): cabe completo. Valor: 60. Resta: 40 kg
+Tomar C (20kg, ratio=5.0): cabe completo. Valor: 100. Resta: 20 kg
+Tomar D (24kg, ratio=5.0): NO cabe completo (solo hay 20kg disponibles)
+  → tomar fracción: 20/24 de D
+  → peso: 20kg, valor: 120×(20/24) = 100
+Resultado:
+  Item A: 10 kg → $60
+  Item C: 20 kg → $100
+  Item D: 20 kg → $100 (fracción 20/24)
+  Total: 50 kg, $260 ✅ ÓPTIMO
+</pre>
+<div class="ok">Greedy es ÓPTIMO para mochila fraccional. La demostración es por intercambio: si hubiera solución mejor, podría mejorarse el ratio en algún punto, contradiciendo la elección greedy.</div>
+</div>
+
+<!-- ===== BACKTRACKING ===== -->
+<div class="card bt-card" id="nreinas">
+<h2 style="color:#4a148c">🔙 Backtracking — Ejercicio 5: N-Reinas</h2>
+<span class="section-label" style="background:#4a148c">BACKTRACKING</span>
+<p><strong>Problema:</strong> Colocar 4 reinas en un tablero 4×4 de modo que ninguna se ataque.</p>
+<p style="color:#555;font-size:.9rem;margin:.4rem 0">Dos reinas se atacan si están en la misma fila, columna o diagonal.</p>
+
+<h3 style="color:#4a148c">Representación: sol[i] = columna de la reina en la fila i</h3>
+<pre class="bt">
+Árbol de búsqueda (fila=nivel, columna=valor):
+
+Fila 1, col 1 → sol=[1,_,_,_]
+  Fila 2, col 1 → ATAQUE COLUMNA ✗
+  Fila 2, col 2 → ATAQUE DIAGONAL ✗  (|2-1|=|2-1|=1)
+  Fila 2, col 3 → OK → sol=[1,3,_,_]
+    Fila 3, col 1 → ATAQUE DIAGONAL ✗ (|3-1|=|1-3|=2)
+    Fila 3, col 2 → ATAQUE DIAGONAL ✗ (|3-1|=|2-3|≠ wait: |2-3|=1≠2... 
+                    col vs fila: reina(1,1) y (3,2):|3-1|=2,|2-1|=1 → no diagonal
+                    reina(2,3) y (3,2):|3-2|=1,|2-3|=1 → DIAGONAL ✗
+    Fila 3, col 3 → ATAQUE COLUMNA ✗ (col 3 ocupada)
+    Fila 3, col 4 → reina(1,1)+(3,4):|3-1|=2,|4-1|=3 OK
+                    reina(2,3)+(3,4):|3-2|=1,|4-3|=1 → DIAGONAL ✗
+    → BACKTRACK a Fila 2
+  Fila 2, col 4 → OK → sol=[1,4,_,_]
+    Fila 3, col 1 → reina(1,1)+(3,1): COLUMNA ✗
+    Fila 3, col 2 → reina(1,1)+(3,2):|3-1|=2,|2-1|=1 OK
+                    reina(2,4)+(3,2):|3-2|=1,|2-4|=2 OK → sol=[1,4,2,_]
+      Fila 4, col 1 → reina(1,1)+(4,1): COLUMNA ✗
+      Fila 4, col 2 → reina(3,2)+(4,2): COLUMNA ✗
+      Fila 4, col 3 → reina(1,1)+(4,3):|4-1|=3,|3-1|=2 OK
+                      reina(2,4)+(4,3):|4-2|=2,|3-4|=1 OK
+                      reina(3,2)+(4,3):|4-3|=1,|3-2|=1 → DIAGONAL ✗
+      Fila 4, col 4 → reina(2,4)+(4,4): COLUMNA ✗
+      → BACKTRACK
+    Fila 3, col 3 → reina(2,4)+(3,3):|3-2|=1,|3-4|=1 → DIAGONAL ✗
+    Fila 3, col 4 → reina(2,4)+(3,4): COLUMNA ✗
+    → BACKTRACK
+
+Fila 1, col 2 → sol=[2,_,_,_]
+  ...
+  Fila 2, col 4 → OK → sol=[2,4,_,_]
+    Fila 3, col 1 → reina(2,4)+(3,1):|1|=1,|3-1|=3 OK ✓
+                    reina(1,2)+(3,1):|2|=2,|1-2|=1 → no diagonal
+                    → sol=[2,4,1,_]
+      Fila 4, col 3 → verificar todas → OK! ✅
+
+SOLUCIÓN ENCONTRADA: sol=[2,4,1,3]
+</pre>
+<h3 style="color:#4a148c">Visualización del tablero solución</h3>
+<pre class="bt">
+     Col: 1   2   3   4
+Fila 1:   .   Q   .   .    ← Reina en (1,2)
+Fila 2:   .   .   .   Q    ← Reina en (2,4)
+Fila 3:   Q   .   .   .    ← Reina en (3,1)
+Fila 4:   .   .   Q   .    ← Reina en (4,3)
+
+Verificación:
+  Columnas: 2,4,1,3 → todas distintas ✓
+  Diagonales: |1-2|≠|2-4|, |1-3|≠|2-1|, etc. → ningún ataque ✓
+</pre>
+
+<h3 style="color:#4a148c">Función de validación</h3>
+<pre class="bt">
+esValido(sol, fila, col):
+  para i desde 1 hasta fila-1:
+    si sol[i] == col:          → misma columna ✗
+      return false
+    si |sol[i] - col| == |i - fila|: → misma diagonal ✗
+      return false
+  return true
+</pre>
+<div class="tip"><strong>¿Cuántas soluciones tiene el tablero 4×4?</strong> Solo 2 (y sus reflejos): [2,4,1,3] y [3,1,4,2]. Para 8×8: 92 soluciones. Para N grande, escala como O(N!).</div>
+</div>
+
+<div class="card bt-card" id="subsets">
+<h2 style="color:#4a148c">🔙 Backtracking — Ejercicio 6: Suma de Subconjuntos</h2>
+<span class="section-label" style="background:#4a148c">BACKTRACKING</span>
+<p><strong>Problema:</strong> Encontrar todos los subconjuntos de <strong>{3, 5, 6, 7}</strong> cuya suma sea exactamente <strong>15</strong>.</p>
+
+<pre class="bt">
+Árbol de decisión: en cada nivel decidimos INCLUIR o NO al elemento.
+Poda: si suma parcial > 15, no seguir.
+
+Nivel 0 (incluir 3?):
+  SÍ → suma=3
+    Nivel 1 (incluir 5?):
+      SÍ → suma=8
+        Nivel 2 (incluir 6?):
+          SÍ → suma=14
+            Nivel 3 (incluir 7?):
+              SÍ → suma=21 > 15 → PODAR ✗
+              NO → suma=14 ≠ 15 → no es solución
+          NO → suma=8
+            Nivel 3 (incluir 7?):
+              SÍ → suma=15 ✅ SOLUCIÓN: {3,5,7}
+              NO → suma=8 ≠ 15
+      NO → suma=3
+        Nivel 2 (incluir 6?):
+          SÍ → suma=9
+            Nivel 3 (incluir 7?):
+              SÍ → suma=16 > 15 → PODAR ✗
+              NO → suma=9 ≠ 15
+          NO → suma=3
+            Nivel 3 (incluir 7?):
+              SÍ → suma=10 ≠ 15
+              NO → suma=3 ≠ 15
+  NO → suma=0
+    Nivel 1 (incluir 5?):
+      SÍ → suma=5
+        Nivel 2 (incluir 6?):
+          SÍ → suma=11
+            Nivel 3 (incluir 7?):
+              SÍ → suma=18 > 15 → PODAR ✗
+              NO → suma=11 ≠ 15
+          NO → suma=5
+            Nivel 3 (incluir 7?):
+              SÍ → suma=12 ≠ 15
+              NO → suma=5 ≠ 15
+      NO → suma=0
+        Nivel 2 (incluir 6?):
+          SÍ → suma=6
+            Nivel 3 (incluir 7?):
+              SÍ → suma=13 ≠ 15
+              NO → suma=6 ≠ 15
+          NO → suma=0
+            Nivel 3 (incluir 7?):
+              SÍ → suma=7 ≠ 15
+              NO → suma=0 ≠ 15
+
+SOLUCIONES: {{3,5,7}} — solo una subsolución con suma=15
+</pre>
+<div class="ok"><strong>Poda efectiva:</strong> cortamos la rama {3,5,6,7}=21 antes de evaluar las subramas de 7. Cuanto mayor es el límite de poda en relación a los valores, más nodos se podan.</div>
+</div>
+
+<div class="card bt-card" id="coloring">
+<h2 style="color:#4a148c">🔙 Backtracking — Ejercicio 7: Coloreo de Grafos</h2>
+<span class="section-label" style="background:#4a148c">BACKTRACKING</span>
+<p><strong>Problema:</strong> Colorear los nodos del grafo con 3 colores de modo que ningún par de nodos adyacentes tenga el mismo color.</p>
+<pre class="bt">
+Grafo:  1 — 2
+        |   |
+        3 — 4 — 5
+
+Aristas: (1,2), (1,3), (2,4), (3,4), (4,5)
+
+Nodo 1: probar color R → sol={1:R}
+  Nodo 2: adj(2)={1:R} → probar G (≠R) → sol={1:R,2:G}
+    Nodo 3: adj(3)={1:R} → probar G → sol={1:R,2:G,3:G}
+      Nodo 4: adj(4)={2:G,3:G} → probar R → sol={...,4:R}
+        Nodo 5: adj(5)={4:R} → probar G → sol={...,5:G} ✅
+
+SOLUCIÓN: {1:R, 2:G, 3:G, 4:R, 5:G}
+
+Verificación:
+  (1,2): R≠G ✓  (1,3): R≠G ✓  (2,4): G≠R ✓
+  (3,4): G≠R ✓  (4,5): R≠G ✓
+</pre>
+<div class="tip"><strong>3-colorabilidad</strong> es un problema NP-completo. Backtracking lo resuelve, pero en el peor caso explora todos los coloreados posibles: O(k^n) donde k=colores, n=nodos. La poda (verificar conflictos antes de avanzar) lo hace práctico para grafos pequeños.</div>
+</div>
+
+<!-- QUIZ -->
+<div class="card" id="quiz">
+<h2 style="color:#1a1a1a">🧠 Quiz — Greedy &amp; Backtracking</h2>
+<p style="color:#555;margin-bottom:1rem">Intentá responder antes de ver la solución.</p>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Qué diferencia hay entre Greedy y Backtracking para el mismo problema?
+  <div class="resp">Greedy toma una decisión y nunca la revisa — elige el candidato localmente óptimo y avanza. Backtracking prueba una opción, avanza, y si no funciona vuelve atrás a probar otra. Greedy es más rápido (O(n log n) típico) pero no siempre da el óptimo. Backtracking siempre encuentra la solución óptima (o todas las soluciones) pero puede ser exponencial.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Por qué en Selección de Actividades se ordena por tiempo de FIN y no de inicio?
+  <div class="resp">Ordenar por tiempo de fin maximiza las actividades que podemos incluir. La actividad que termina antes "libera" el salón más pronto, dejando más espacio para otras actividades. Si ordenáramos por inicio, podríamos tomar una actividad que empieza temprano pero termina tarde, bloqueando muchas otras. Ordenar por fin es la elección greedy que tiene propiedad greedy demostrable: siempre forma parte de alguna solución óptima.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Qué es la propiedad "greedy choice property"?
+  <div class="resp">Es la propiedad que garantiza que el algoritmo greedy produce la solución óptima: la elección localmente óptima en cada paso siempre es parte de alguna solución globalmente óptima. Se demuestra por contradicción (argumento de intercambio): se asume que hay una solución óptima que no incluye la elección greedy, y se muestra que podés "intercambiar" para incluirla sin empeorar la solución. Si esta propiedad no se cumple, Greedy puede fallar.</div>
+</div>
+
+<div class="quiz-item" onclick="this.classList.toggle('open')">¿Cómo funciona la poda en Backtracking y cómo mejora la performance?
+  <div class="resp">La poda corta ramas del árbol de búsqueda cuando se detecta que ninguna solución en esa rama puede ser válida u óptima. Tipos de poda: (1) <strong>Poda de factibilidad</strong>: la solución parcial ya viola alguna restricción → cortar. (2) <strong>Poda de optimalidad</strong> (branch & bound): la solución parcial no puede superar la mejor encontrada hasta ahora → cortar. Sin poda, backtracking = fuerza bruta = O(2^n) o O(n!). Con buena poda, puede resolver instancias prácticas en tiempo razonable.</div>
+</div>
+
+<div class="bt-q" onclick="this.classList.toggle('open')">¿Cuántas soluciones tiene el problema de 8-reinas?
+  <div class="resp">El problema de 8-reinas tiene <strong>92 soluciones</strong> (sin contar simetrías y rotaciones; si contamos solo soluciones fundamentalmente distintas son 12). Backtracking las encuentra todas explorando el árbol de decisión, podando cada vez que dos reinas se atacan. Sin poda, habría 8^8 = 16.777.216 posibles configuraciones. Con poda, se exploran ~15.720 nodos del árbol.</div>
+</div>
+
+<div class="bt-q" onclick="this.classList.toggle('open')">¿Cómo se representa un estado en Backtracking?
+  <div class="resp">Un estado en backtracking se representa como una <strong>solución parcial</strong>: los valores asignados hasta el momento más la posición actual. En N-Reinas: sol[1..fila_actual] donde sol[i]=columna de la reina en fila i. En suma de subconjuntos: conjunto actual + suma parcial + índice actual. La clave es que el estado capture toda la información necesaria para decidir si agregar un candidato es válido, y para hacer backtrack (deshacer la última decisión).</div>
+</div>
+
+</div>
+</main>
+<script>
+const s=document.querySelectorAll('[id]'),l=document.querySelectorAll('nav a');
+window.addEventListener('scroll',()=>{
+  let c='';s.forEach(x=>{if(window.scrollY>=x.offsetTop-85)c=x.id});
+  l.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active')});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programación 3 — UADE 2026</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#1a237e;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2.5rem 1rem 3rem}
+.header{text-align:center;color:#fff;margin-bottom:2.5rem}
+.header h1{font-size:2.2rem;font-weight:800;margin-bottom:.4rem;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.header p{color:#c5cae9;font-size:1rem;margin-bottom:.6rem}
+.badge-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.8rem}
+.badge{background:rgba(255,255,255,.15);color:#fff;border-radius:20px;padding:.25rem .9rem;font-size:.8rem;border:1px solid rgba(255,255,255,.3)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.4rem;width:100%;max-width:1000px}
+.card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.28)}
+.card-header{padding:1.3rem 1.3rem .9rem;display:flex;align-items:center;gap:.9rem}
+.card-icon{font-size:2.4rem;flex-shrink:0}
+.card-title h2{font-size:1.1rem;color:#1a237e;margin-bottom:.15rem}
+.card-title p{font-size:.81rem;color:#666;line-height:1.4}
+.card-body{padding:0 1.3rem .9rem;flex:1}
+.topic-list{list-style:none}
+.topic-list li{font-size:.83rem;color:#444;padding:.22rem 0;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:.45rem}
+.topic-list li:last-child{border-bottom:none}
+.topic-list li::before{content:"•";color:#3949ab;font-weight:700;font-size:1rem}
+.card-footer{padding:.9rem 1.3rem 1.3rem}
+.btn{display:block;text-align:center;color:#fff;text-decoration:none;padding:.7rem 1rem;border-radius:10px;font-weight:700;font-size:.93rem;transition:background .2s}
+.b1{background:#1a237e}.b1:hover{background:#283593}
+.b2{background:#1b5e20}.b2:hover{background:#2e7d32}
+.b3{background:#4a148c}.b3:hover{background:#6a1b9a}
+.b4{background:#bf360c}.b4:hover{background:#d84315}
+.divider{width:100%;max-width:1000px;border:none;border-top:1px solid rgba(255,255,255,.2);margin:2rem 0}
+.temas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;width:100%;max-width:1000px;margin-bottom:2rem}
+.tema-card{background:rgba(255,255,255,.1);border-radius:10px;padding:1rem;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.tema-card h3{font-size:.95rem;margin-bottom:.4rem}
+.tema-card p{font-size:.8rem;color:#c5cae9;line-height:1.5}
+.footer{color:#7986cb;font-size:.8rem;text-align:center;margin-top:1.5rem}
+@media(max-width:600px){.header h1{font-size:1.6rem}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>💻 Programación 3</h1>
+  <p>Material de estudio — UADE 2026</p>
+  <div class="badge-row">
+    <span class="badge">📚 4 Técnicas de Diseño</span>
+    <span class="badge">🎯 Divide &amp; Conquer</span>
+    <span class="badge">🎯 Greedy</span>
+    <span class="badge">🎯 Backtracking</span>
+    <span class="badge">🎯 Prog. Dinámica</span>
+  </div>
+</div>
+
+<div class="temas-grid">
+  <div class="tema-card">
+    <h3>✂️ Divide &amp; Conquer</h3>
+    <p>Dividir el problema en subproblemas, resolverlos recursivamente y combinar. MergeSort, QuickSort, máximo subarreglo.</p>
+  </div>
+  <div class="tema-card">
+    <h3>💰 Greedy</h3>
+    <p>Tomar la decisión localmente óptima en cada paso. Problema del cambio, mochila fraccional, Huffman, Kruskal.</p>
+  </div>
+  <div class="tema-card">
+    <h3>🔙 Backtracking</h3>
+    <p>Explorar todas las soluciones posibles, retrocediendo cuando se detecta que no llevan a una solución válida. N-Reinas, subconjuntos.</p>
+  </div>
+  <div class="tema-card">
+    <h3>📊 Prog. Dinámica</h3>
+    <p>Guardar resultados de subproblemas para no recalcularlos. Mochila 0/1, Floyd, Fibonacci, subsecuencia común.</p>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📖</div>
+      <div class="card-title">
+        <h2>Material Principal</h2>
+        <p>Teoría, fórmulas, ejemplos resueltos y comparación de técnicas</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li>Complejidad temporal — O(n), O(log n), O(n²)</li>
+        <li>Divide &amp; Conquer — Teorema Maestro</li>
+        <li>Greedy — cuándo funciona y cuándo no</li>
+        <li>Backtracking — árbol de estados, poda</li>
+        <li>Programación Dinámica — tablas bottom-up</li>
+        <li>Comparación de técnicas con ejemplos</li>
+      </ul>
+    </div>
+    <div class="card-footer"><a href="material.html" class="btn b1">Ver Material Principal →</a></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">✂️</div>
+      <div class="card-title">
+        <h2>Divide &amp; Conquer</h2>
+        <p>Ejercicios resueltos paso a paso: MergeSort, máximo subarreglo, búsqueda binaria</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li>MergeSort — traza completa con arreglo</li>
+        <li>Máximo subarreglo (Kadane vs D&amp;C)</li>
+        <li>Búsqueda Binaria — análisis de complejidad</li>
+        <li>Teorema Maestro — los 3 casos con ejemplos</li>
+        <li>Preguntas con respuesta</li>
+      </ul>
+    </div>
+    <div class="card-footer"><a href="dyc.html" class="btn b2">Ver D&amp;C →</a></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">💰</div>
+      <div class="card-title">
+        <h2>Greedy &amp; Backtracking</h2>
+        <p>Cuándo usar cada técnica, ejercicios clásicos resueltos</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li>Cambio de monedas — Greedy vs PD</li>
+        <li>Mochila fraccional vs 0/1</li>
+        <li>Código de Huffman paso a paso</li>
+        <li>N-Reinas — árbol de backtracking</li>
+        <li>Subconjuntos con suma objetivo</li>
+        <li>Preguntas con respuesta</li>
+      </ul>
+    </div>
+    <div class="card-footer"><a href="greedy-bt.html" class="btn b3">Ver Greedy &amp; BT →</a></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📊</div>
+      <div class="card-title">
+        <h2>Programación Dinámica</h2>
+        <p>Bottom-up, memoización, tablas de DP con trazas completas</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li>Mochila 0/1 — tabla completa</li>
+        <li>Floyd-Warshall — caminos mínimos</li>
+        <li>Fibonacci — recursión vs DP</li>
+        <li>Subsecuencia Común más Larga (LCS)</li>
+        <li>Preguntas con respuesta</li>
+      </ul>
+    </div>
+    <div class="card-footer"><a href="pd.html" class="btn b4">Ver Prog. Dinámica →</a></div>
+  </div>
+</div>
+
+<hr class="divider">
+<div style="width:100%;max-width:1000px;background:rgba(255,255,255,.08);border-radius:12px;padding:1.2rem;color:#fff;border:1px solid rgba(255,200,0,.3)">
+  <strong>💡 ¿Por dónde empezar?</strong><br>
+  <span style="color:#c5cae9;font-size:.9rem">1. Leé el Material Principal para entender cuándo usar cada técnica. 2. Practicá D&amp;C con MergeSort y el Teorema Maestro. 3. Comparará Greedy vs Backtracking con el problema de la mochila. 4. Cerrá con Programación Dinámica — es la técnica más pedida en parciales.</span>
+</div>
+
+<p class="footer">Material generado con Claude · Programación 3 UADE 2026 · <a href="https://github.com/guidolaufer/prog3-uade-2026" style="color:#7986cb">github.com/guidolaufer/prog3-uade-2026</a></p>
+</body>
+</html>
