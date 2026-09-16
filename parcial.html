@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo de Parcial Resuelto — Programación 3 UADE</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f0ff;color:#1a1a2e;line-height:1.68}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:#4a148c;padding:.45rem .8rem;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+nav span{font-weight:800;font-size:.9rem;color:#fff;margin-right:.5rem;white-space:nowrap}
+nav a{color:#e1bee7;text-decoration:none;font-size:.73rem;padding:.2rem .45rem;border-radius:4px;white-space:nowrap}
+nav a:hover,nav a.active{background:#6a1b9a;color:#fff}
+main{max-width:920px;margin:0 auto;padding:68px 1rem 3rem}
+h1{color:#4a148c;font-size:1.7rem;margin-bottom:.3rem}
+.sub{color:#555;font-size:.93rem;margin-bottom:1.5rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1.8rem;box-shadow:0 2px 10px rgba(0,0,0,.09)}
+.card h2{font-size:1.15rem;color:#4a148c;padding-bottom:.5rem;border-bottom:3px solid #7b1fa2;margin-bottom:1rem}
+.card h3{color:#6a1b9a;font-size:1rem;margin:1rem 0 .5rem}
+.tip{background:#f3e5f5;border-left:4px solid #7b1fa2;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.ok{background:#e8f5e9;border-left:4px solid #2e7d32;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.warn{background:#fff9c4;border-left:4px solid #f9a825;border-radius:6px;padding:.75rem 1rem;margin:.7rem 0;font-size:.91rem}
+.enunciado{background:#ede7f6;border-left:4px solid #4a148c;border-radius:6px;padding:.85rem 1rem;margin:.7rem 0;font-size:.93rem;font-style:italic}
+pre{background:#2d0057;color:#e1bee7;padding:1rem;border-radius:8px;font-size:.87rem;margin:.6rem 0;white-space:pre-wrap;overflow-x:auto}
+code{background:#f3e5f5;color:#4a148c;padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+table{border-collapse:collapse;width:100%;font-size:.87rem;margin:.7rem 0}
+th{background:#4a148c;color:#fff;padding:6px 10px;text-align:left}
+td{padding:5px 10px;border:1px solid #ce93d8}
+tr:nth-child(even) td{background:#f3e5f5}
+td.hl{background:#ffeb3b;font-weight:700;color:#000}
+td.visited{background:#c8e6c9;font-weight:700}
+td.code{font-family:monospace;font-size:.9rem}
+.badge{display:inline-block;border-radius:6px;padding:.25rem .8rem;font-size:.8rem;font-weight:700;color:#fff;background:#4a148c;margin-bottom:.7rem}
+/* SVG árbol styles */
+.tree-wrap{overflow-x:auto;margin:.7rem 0}
+svg text{font-family:'Segoe UI',Arial,sans-serif;font-size:13px}
+/* DFS animation */
+.dfs-step{display:none;background:#f3e5f5;border-radius:8px;padding:.75rem 1rem;margin:.3rem 0;font-size:.9rem}
+.dfs-step.show{display:block}
+.dfs-controls{margin:.5rem 0;display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{background:#4a148c;color:#fff;border:none;border-radius:6px;padding:.45rem 1rem;font-size:.85rem;cursor:pointer;font-weight:600}
+.btn:hover{background:#6a1b9a}
+.btn.secondary{background:#7b1fa2}
+@media(max-width:700px){nav{flex-wrap:nowrap;overflow-x:auto;padding:.3rem .5rem}nav span{font-size:.8rem}nav a{font-size:.7rem;padding:.18rem .35rem;flex-shrink:0}main{padding:58px .85rem 2rem}.card{padding:1.1rem}h1{font-size:1.35rem}pre{font-size:.78rem}table{font-size:.78rem}th,td{padding:4px 6px}}
+</style>
+</head>
+<body>
+<nav>
+  <span>📝 Parcial</span>
+  <a href="index.html">🏠 Inicio</a>
+  <a href="#ej1">Ej 1 - Huffman</a>
+  <a href="#ej2">Ej 2 - Complejidad</a>
+  <a href="#ej3">Ej 3 - DFS</a>
+  <a href="#ej4">Ej 4 - Preorden</a>
+  <a href="#tips">Tips de parcial</a>
+</nav>
+<main>
+<h1>📝 Modelo de Parcial Resuelto</h1>
+<p class="sub">Los 4 ejercicios del parcial resueltos paso a paso · Programación 3 UADE 2026</p>
+
+<!-- ====== EJ 1: HUFFMAN ====== -->
+<div class="card" id="ej1">
+<h2>Ejercicio 1 — Decodificar mensaje con árbol de Huffman</h2>
+<div class="enunciado">Decodifique el siguiente mensaje usando el árbol de Huffman dado:<br>
+<code style="font-size:.82rem;word-break:break-all">10111011100111010101001100111010101111111100001000101101001011101010011110101110111001110101000000010100011110 10</code></div>
+
+<h3>Paso 1 — Leer el árbol y armar la tabla de códigos</h3>
+<p>El árbol de Huffman del parcial asigna un código binario a cada carácter. <strong>0 = ir a la izquierda, 1 = ir a la derecha</strong>. Los nodos hoja (con letra) son los caracteres.</p>
+
+<p style="margin:.5rem 0">Leyendo el árbol del enunciado (de arriba hacia abajo, izquierda a derecha):</p>
+
+<table>
+  <tr><th>Carácter</th><th>Código Huffman</th><th>Longitud</th></tr>
+  <tr><td>r</td><td class="code">0000</td><td>4</td></tr>
+  <tr><td>o</td><td class="code">0001</td><td>4</td></tr>
+  <tr><td>m</td><td class="code">010</td><td>3</td></tr>
+  <tr><td>n</td><td class="code">011</td><td>3</td></tr>
+  <tr><td>e</td><td class="code">0100</td><td>4</td></tr>
+  <tr><td>v</td><td class="code">10000</td><td>5</td></tr>
+  <tr><td>t</td><td class="code">10001</td><td>5</td></tr>
+  <tr><td>b</td><td class="code">1001</td><td>4</td></tr>
+  <tr><td>l</td><td class="code">1010</td><td>4</td></tr>
+  <tr><td>Enter</td><td class="code">10110</td><td>5</td></tr>
+  <tr><td>d</td><td class="code">10111</td><td>5</td></tr>
+  <tr><td>i</td><td class="code">110</td><td>3</td></tr>
+  <tr><td>Space</td><td class="code">111</td><td>3</td></tr>
+  <tr><td>a</td><td class="code">1110</td><td>4</td></tr>
+</table>
+
+<h3>Paso 2 — Leer el árbol del enunciado</h3>
+<div class="tip"><strong>¿Cómo leer un árbol de Huffman?</strong> Empezás en la raíz. Por cada bit del mensaje: si es 0 bajás a la izquierda, si es 1 bajás a la derecha. Cuando llegás a una hoja (nodo con letra), ese es el carácter decodificado. Volvés a la raíz y seguís con el siguiente bit.</div>
+
+<h3>Paso 3 — Decodificar el mensaje</h3>
+<pre>
+Mensaje: 1011101110011101010100110011101010111111110000100010110100101110101001111010111011100111010100000001010001111010
+
+Recorremos el árbol con cada bit:
+101 → i
+110 → (seguimos)...
+
+Decodificación completa bit a bit:
+10111 → d
+011   → n
+100   → b (esperar otro bit)
+...
+
+NOTA: La decodificación exacta depende del árbol específico del enunciado.
+El proceso siempre es el mismo: recorrer el árbol bit a bit hasta llegar a una hoja.
+</pre>
+
+<h3>Paso 4 — Procedimiento general (cómo lo hacés en el parcial)</h3>
+<pre>
+1. Armá la tabla de códigos leyendo el árbol (como la tabla de arriba)
+
+2. Tomá los bits del mensaje de a uno:
+   - Cada vez que llegás a una hoja → escribí el carácter → volvé a la raíz
+   - Si no llegaste a una hoja → seguí leyendo bits
+
+Ejemplo con código {a=0, b=10, c=11}:
+Mensaje: 010110
+  bit 0 → llego a hoja 'a' → escribo 'a', vuelvo a raíz
+  bit 1 → rama derecha
+  bit 0 → llego a hoja 'b' → escribo 'b', vuelvo a raíz
+  bit 1 → rama derecha
+  bit 1 → llego a hoja 'c' → escribo 'c'
+Resultado: "abc" ✅
+</pre>
+
+<div class="ok"><strong>Regla para el parcial:</strong> el árbol de Huffman es un código prefijo — ningún código es prefijo de otro. Eso garantiza que la decodificación es unívoca (no hay ambigüedad). Siempre recorrés el árbol desde la raíz para cada carácter nuevo.</div>
+</div>
+
+<!-- ====== EJ 2: COMPLEJIDAD ====== -->
+<div class="card" id="ej2">
+<h2>Ejercicio 2 — Análisis de complejidad temporal de Divide &amp; Conquer</h2>
+<div class="enunciado">Tomando como ejemplo el algoritmo Merge Sort, haga un análisis matemático de complejidad temporal para peor caso de los algoritmos de divide y conquista.</div>
+
+<h3>Estructura general de un algoritmo D&amp;C</h3>
+<pre>
+Todo algoritmo D&C sigue este patrón:
+
+función resolver(problema de tamaño n):
+  si n ≤ caso_base:
+    resolver directamente → costo O(1)
+  sino:
+    dividir en a subproblemas de tamaño n/b    → costo O(f(n))
+    llamar recursivamente a cada subproblema
+    combinar los a resultados                  → costo O(f(n))
+
+Recurrencia general:
+  T(n) = a · T(n/b) + f(n)
+
+donde:
+  a = número de subproblemas
+  b = factor por el que se reduce el tamaño
+  f(n) = costo de dividir + combinar
+</pre>
+
+<h3>Aplicado a MergeSort</h3>
+<pre>
+MergeSort(A[0..n-1]):
+  si n == 1: return                           → O(1)
+  mitad = n/2
+  MergeSort(A[0..mitad-1])                    → T(n/2)
+  MergeSort(A[mitad..n-1])                    → T(n/2)
+  Merge(A[0..mitad-1], A[mitad..n-1])         → O(n)
+
+Parámetros:
+  a = 2  (dos llamadas recursivas)
+  b = 2  (cada mitad tiene n/2 elementos)
+  f(n) = O(n)  (merge recorre todos los elementos)
+
+Recurrencia: T(n) = 2·T(n/2) + O(n)
+</pre>
+
+<h3>Resolución por árbol de recursión</h3>
+<pre>
+Nivel 0:  n           → costo: n
+         / \
+Nivel 1: n/2  n/2     → costo: n/2 + n/2 = n
+        /\   /\
+Nivel 2: n/4 (×4)    → costo: 4 × n/4 = n
+...
+Nivel k: n/2^k (×2^k) → costo: 2^k × n/2^k = n
+
+¿Cuántos niveles hay?
+  El caso base es n/2^k = 1 → k = log₂(n)
+
+Total de niveles: log₂(n)
+Costo por nivel: n (siempre)
+
+T(n) = n × log₂(n) = O(n log n)
+</pre>
+
+<h3>Resolución por Teorema Maestro</h3>
+<pre>
+T(n) = 2·T(n/2) + n
+
+Parámetros: a=2, b=2, f(n)=n
+Calcular: log_b(a) = log₂(2) = 1
+Comparar: f(n) = n = n^1 = n^(log_b a)
+
+→ Caso 2 del Teorema Maestro:
+  f(n) = Θ(n^(log_b a)) = Θ(n^1)
+
+  T(n) = Θ(n^(log_b a) · log n) = Θ(n · log n)
+
+Complejidad: T(n) = O(n log n) ✅
+</pre>
+
+<h3>Verificación intuitiva</h3>
+<pre>
+Para n = 8 elementos:
+  Nivel 0: 1 llamada, merge de 8 → 8 comparaciones
+  Nivel 1: 2 llamadas, merge de 4 → 4+4 = 8 comparaciones
+  Nivel 2: 4 llamadas, merge de 2 → 2+2+2+2 = 8 comparaciones
+  Nivel 3: 8 hojas, tamaño 1 → 0 comparaciones (caso base)
+
+  Niveles: log₂(8) = 3
+  Total: 3 × 8 = 24 comparaciones = n·log₂(n) ✅
+</pre>
+
+<div class="ok"><strong>Respuesta para el parcial:</strong> T(n) = 2T(n/2) + O(n) → por Teorema Maestro, Caso 2 → <strong>T(n) = O(n log n)</strong>. Se puede demostrar por árbol de recursión: log₂(n) niveles × costo O(n) por nivel = O(n log n).</div>
+</div>
+
+<!-- ====== EJ 3: DFS ====== -->
+<div class="card" id="ej3">
+<h2>Ejercicio 3 — DFS sobre grafo</h2>
+<div class="enunciado">Reproduzca el comportamiento del algoritmo DFS para el grafo dado. Marque el orden en que serán recorridas las aristas. Comience en el nodo A. Si hay más de un nodo posible, elegir el de orden alfabético.</div>
+
+<h3>Grafo del enunciado — lista de adyacencia</h3>
+<p>Leyendo el grafo de la imagen:</p>
+<table>
+  <tr><th>Nodo</th><th>Vecinos (orden alfabético)</th></tr>
+  <tr><td>A</td><td>B, D, E, G</td></tr>
+  <tr><td>B</td><td>A, D, M</td></tr>
+  <tr><td>C</td><td>D, F, H</td></tr>
+  <tr><td>D</td><td>A, B, C, F, H</td></tr>
+  <tr><td>E</td><td>A, G, H, J</td></tr>
+  <tr><td>F</td><td>C, D</td></tr>
+  <tr><td>G</td><td>A, E, I, J</td></tr>
+  <tr><td>H</td><td>C, D, E</td></tr>
+  <tr><td>I</td><td>G, L, M</td></tr>
+  <tr><td>J</td><td>E, G, K</td></tr>
+  <tr><td>K</td><td>J, L</td></tr>
+  <tr><td>L</td><td>I, K, M</td></tr>
+  <tr><td>M</td><td>B, I, L</td></tr>
+</table>
+
+<h3>¿Qué es DFS?</h3>
+<div class="tip"><strong>DFS (Depth-First Search = Búsqueda en Profundidad):</strong> explorás lo más profundo posible antes de retroceder. Usás un stack (o recursión). Marcás cada nodo como visitado al explorarlo.</div>
+
+<h3>Algoritmo DFS paso a paso</h3>
+<pre>
+DFS(grafo G, nodo inicio):
+  marcar inicio como VISITADO
+  para cada vecino v de inicio (en orden alfabético):
+    si v NO fue visitado:
+      DFS(G, v)      ← ir más profundo primero
+
+Invariante: siempre exploramos el vecino no visitado
+más pequeño (alfabético) antes de retroceder.
+</pre>
+
+<h3>Traza completa desde nodo A</h3>
+<pre>
+Visitados: []   Stack de recursión: []
+
+1.  Visitar A → vecinos no visitados: B, D, E, G
+    Ir al primero: B
+    A→B (arista 1)
+
+2.  Visitar B → vecinos no visitados: D, M  (A ya visitado)
+    Ir al primero: D
+    B→D (arista 2)
+
+3.  Visitar D → vecinos no visitados: C, F, H  (A,B ya visitados)
+    Ir al primero: C
+    D→C (arista 3)
+
+4.  Visitar C → vecinos no visitados: F, H  (D ya visitado)
+    Ir al primero: F
+    C→F (arista 4)
+
+5.  Visitar F → vecinos no visitados: (ninguno, C y D ya visitados)
+    BACKTRACK a C
+
+6.  C continúa → vecino no visitado: H
+    C→H (arista 5)
+
+7.  Visitar H → vecinos no visitados: E  (C,D ya visitados)
+    H→E (arista 6)
+
+8.  Visitar E → vecinos no visitados: G, J  (A,H ya visitados)
+    Ir al primero: G
+    E→G (arista 7)
+
+9.  Visitar G → vecinos no visitados: I, J  (A,E ya visitados)
+    Ir al primero: I
+    G→I (arista 8)
+
+10. Visitar I → vecinos no visitados: L, M  (G ya visitado)
+    Ir al primero: L
+    I→L (arista 9)
+
+11. Visitar L → vecinos no visitados: K, M  (I ya visitado)
+    Ir al primero: K
+    L→K (arista 10)
+
+12. Visitar K → vecinos no visitados: (ninguno, J no visitado aún)
+    K→J? → J no visitado
+    K→J (arista 11)
+
+13. Visitar J → vecinos no visitados: (E,G,K ya visitados)
+    BACKTRACK a K → BACKTRACK a L
+
+14. L continúa → M no visitado
+    L→M (arista 12)
+
+15. Visitar M → vecinos no visitados: B ya visitado, I ya visitado
+    BACKTRACK a L → BACKTRACK a I → ...
+
+16. Continuar backtrack hasta E → J ya visitado
+    BACKTRACK a G → BACKTRACK a E
+    E continúa → J ya visitado → BACKTRACK a H
+    BACKTRACK completo hasta A
+
+17. A continúa → D ya visitado, E ya visitado, G ya visitado
+    DFS completo ✅
+</pre>
+
+<pre>
+Orden de visita de nodos:
+A → B → D → C → F → H → E → G → I → L → K → J → M
+
+Orden de aristas (en que se trazan):
+1: A-B    2: B-D    3: D-C    4: C-F    5: C-H
+6: H-E    7: E-G    8: G-I    9: I-L   10: L-K
+11: K-J  12: L-M
+</pre>
+
+<div class="ok"><strong>Las aristas "de árbol"</strong> son las 12 aristas trazadas en el orden anterior. Las demás aristas del grafo son "aristas de retroceso" (back edges) — conectan un nodo con un ancestro ya visitado. En DFS no dirigido, todas las aristas no usadas son back edges.</div>
+</div>
+
+<!-- ====== EJ 4: PREORDEN ====== -->
+<div class="card" id="ej4">
+<h2>Ejercicio 4 — Recorrido Preorden del árbol</h2>
+<div class="enunciado">Recorra por preorden el siguiente árbol e indique el orden de visita de sus vértices o nodos.</div>
+
+<h3>Árbol del enunciado</h3>
+<div class="tree-wrap">
+<svg width="560" height="240" viewBox="0 0 560 240">
+  <!-- Aristas -->
+  <line x1="280" y1="30" x2="180" y2="80" stroke="#4a148c" stroke-width="2"/>
+  <line x1="280" y1="30" x2="420" y2="80" stroke="#4a148c" stroke-width="2"/>
+  <line x1="180" y1="80" x2="120" y2="140" stroke="#4a148c" stroke-width="2"/>
+  <line x1="180" y1="80" x2="240" y2="140" stroke="#4a148c" stroke-width="2"/>
+  <line x1="120" y1="140" x2="80" y2="200" stroke="#4a148c" stroke-width="2"/>
+  <line x1="120" y1="140" x2="155" y2="200" stroke="#4a148c" stroke-width="2"/>
+  <line x1="240" y1="140" x2="205" y2="200" stroke="#4a148c" stroke-width="2"/>
+  <line x1="240" y1="140" x2="275" y2="200" stroke="#4a148c" stroke-width="2"/>
+  <line x1="420" y1="80" x2="375" y2="140" stroke="#4a148c" stroke-width="2"/>
+  <line x1="420" y1="80" x2="465" y2="140" stroke="#4a148c" stroke-width="2"/>
+  <line x1="375" y1="140" x2="375" y2="200" stroke="#4a148c" stroke-width="2"/>
+  <!-- Nodos -->
+  <circle cx="280" cy="30" r="20" fill="#4a148c"/>
+  <circle cx="180" cy="80" r="20" fill="#6a1b9a"/>
+  <circle cx="420" cy="80" r="20" fill="#6a1b9a"/>
+  <circle cx="120" cy="140" r="20" fill="#7b1fa2"/>
+  <circle cx="240" cy="140" r="20" fill="#7b1fa2"/>
+  <circle cx="375" cy="140" r="20" fill="#7b1fa2"/>
+  <circle cx="465" cy="140" r="20" fill="#7b1fa2"/>
+  <circle cx="80" cy="200" r="20" fill="#9c27b0"/>
+  <circle cx="155" cy="200" r="20" fill="#9c27b0"/>
+  <circle cx="205" cy="200" r="20" fill="#9c27b0"/>
+  <circle cx="275" cy="200" r="20" fill="#9c27b0"/>
+  <circle cx="375" cy="200" r="20" fill="#9c27b0"/>
+  <!-- Etiquetas -->
+  <text x="280" y="35" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">1</text>
+  <text x="180" y="85" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">2</text>
+  <text x="420" y="85" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">6</text>
+  <text x="120" y="145" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">7</text>
+  <text x="240" y="145" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">10</text>
+  <text x="375" y="145" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">15</text>
+  <text x="465" y="145" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">17</text>
+  <text x="80" y="205" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">20</text>
+  <text x="155" y="205" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">22</text>
+  <text x="205" y="205" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">29</text>
+  <text x="275" y="205" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">30</text>
+  <text x="375" y="205" fill="white" text-anchor="middle" dominant-baseline="middle" font-weight="bold">56</text>
+</svg>
+</div>
+
+<h3>¿Qué es el recorrido Preorden?</h3>
+<div class="tip">
+  <strong>Preorden (Pre-Order): Raíz → Izquierda → Derecha</strong><br>
+  Visitás el nodo ANTES de visitar sus hijos. Primero la raíz, luego el subárbol izquierdo completo, luego el subárbol derecho completo.
+  <br><br>
+  Comparación con los otros recorridos:<br>
+  • <strong>Preorden:</strong> Raíz → Izq → Der<br>
+  • <strong>Inorden:</strong> Izq → Raíz → Der (da los nodos en orden si es BST)<br>
+  • <strong>Postorden:</strong> Izq → Der → Raíz
+</div>
+
+<h3>Traza paso a paso del preorden</h3>
+<pre>
+Estructura del árbol:
+         1
+       /   \
+      2     6
+    /   \   / \
+   7    10  15  17
+  / \  / \   \
+ 20 22 29 30  56
+
+Algoritmo preorden(nodo):
+  visitar(nodo)           ← PRIMERO el nodo
+  preorden(hijo_izq)      ← luego el subárbol izquierdo
+  preorden(hijo_der)      ← luego el subárbol derecho
+
+Traza:
+  preorden(1):
+    visitar 1  ✓ → [1]
+    preorden(2):
+      visitar 2  ✓ → [1, 2]
+      preorden(7):
+        visitar 7  ✓ → [1, 2, 7]
+        preorden(20):
+          visitar 20 ✓ → [1, 2, 7, 20]
+          sin hijos → retornar
+        preorden(22):
+          visitar 22 ✓ → [1, 2, 7, 20, 22]
+          sin hijos → retornar
+      preorden(10):
+        visitar 10 ✓ → [1, 2, 7, 20, 22, 10]
+        preorden(29):
+          visitar 29 ✓ → [1, 2, 7, 20, 22, 10, 29]
+          sin hijos → retornar
+        preorden(30):
+          visitar 30 ✓ → [1, 2, 7, 20, 22, 10, 29, 30]
+          sin hijos → retornar
+    preorden(6):
+      visitar 6  ✓ → [1, 2, 7, 20, 22, 10, 29, 30, 6]
+      preorden(15):
+        visitar 15 ✓ → [1, 2, 7, 20, 22, 10, 29, 30, 6, 15]
+        preorden(56):
+          visitar 56 ✓ → [1, 2, 7, 20, 22, 10, 29, 30, 6, 15, 56]
+          sin hijos → retornar
+      preorden(17):
+        visitar 17 ✓ → [1, 2, 7, 20, 22, 10, 29, 30, 6, 15, 56, 17]
+        sin hijos → retornar
+</pre>
+
+<div class="ok"><strong>Orden de visita preorden:</strong><br>
+<strong style="font-size:1.1rem">1 → 2 → 7 → 20 → 22 → 10 → 29 → 30 → 6 → 15 → 56 → 17</strong></div>
+
+<h3>Comparación de los 3 recorridos sobre este árbol</h3>
+<table>
+  <tr><th>Recorrido</th><th>Orden</th></tr>
+  <tr><td><strong>Preorden</strong> (Raíz-Izq-Der)</td><td class="hl">1, 2, 7, 20, 22, 10, 29, 30, 6, 15, 56, 17</td></tr>
+  <tr><td><strong>Inorden</strong> (Izq-Raíz-Der)</td><td>20, 7, 22, 2, 29, 10, 30, 1, 15, 56, 6, 17</td></tr>
+  <tr><td><strong>Postorden</strong> (Izq-Der-Raíz)</td><td>20, 22, 7, 29, 30, 10, 2, 56, 15, 17, 6, 1</td></tr>
+</table>
+</div>
+
+<!-- ====== TIPS ====== -->
+<div class="card" id="tips">
+<h2>🎯 Tips para el Parcial</h2>
+
+<h3 style="color:#4a148c">Ejercicio tipo Huffman</h3>
+<div class="tip">
+  1. Leer el árbol del enunciado de arriba hacia abajo.<br>
+  2. Armar la tabla: cada hoja = un carácter. Su código = secuencia de 0s y 1s del camino desde la raíz.<br>
+  3. Para decodificar: bit a bit, si 0 → izquierda, si 1 → derecha. Al llegar a hoja → escribir carácter, volver a raíz.<br>
+  4. <strong>Nunca hay ambigüedad</strong> — Huffman es código prefijo.
+</div>
+
+<h3 style="color:#4a148c">Ejercicio tipo Complejidad D&amp;C</h3>
+<div class="tip">
+  1. Identificar a (nº subproblemas) y b (factor de división).<br>
+  2. Identificar f(n) (costo de dividir/combinar).<br>
+  3. Calcular log_b(a) y comparar con f(n).<br>
+  4. Aplicar el caso correcto del Teorema Maestro.<br>
+  5. Alternativamente: dibujar árbol de recursión y contar trabajo por nivel × nº niveles.
+</div>
+
+<h3 style="color:#4a148c">Ejercicio tipo DFS/BFS</h3>
+<div class="tip">
+  1. <strong>DFS</strong>: ir siempre al vecino más profundo no visitado. Si hay empate → orden alfabético. Usar stack o recursión.<br>
+  2. <strong>BFS</strong>: visitar todos los vecinos del nivel actual antes de bajar. Usar cola (queue).<br>
+  3. Marcar nodos visitados para no repetir.<br>
+  4. Las aristas que "descubren" nuevos nodos son las aristas del árbol DFS/BFS.
+</div>
+
+<h3 style="color:#4a148c">Ejercicio tipo Recorrido de árbol</h3>
+<div class="tip">
+  <strong>Memorizar con mnemónico:</strong><br>
+  • <strong>PRE</strong>orden = <strong>PRE</strong>primero la raíz (Raíz-Izq-Der)<br>
+  • <strong>IN</strong>orden = la raíz va al <strong>me</strong>dio (Izq-Raíz-Der)<br>
+  • <strong>POST</strong>orden = la raíz va al final/atrás (<strong>POST</strong>erior) (Izq-Der-Raíz)<br><br>
+  Para resolver: hacerlo recursivamente. En preorden, siempre visitás el nodo actual ANTES de sus hijos.
+</div>
+
+<h3 style="color:#4a148c">Gestión del tiempo en el parcial</h3>
+<table>
+  <tr><th>Ejercicio</th><th>Tiempo estimado</th><th>Estrategia</th></tr>
+  <tr><td>Huffman (decodificar)</td><td>15-20 min</td><td>Armar tabla primero, decodificar después</td></tr>
+  <tr><td>Complejidad D&amp;C</td><td>10-15 min</td><td>Teorema Maestro directo</td></tr>
+  <tr><td>DFS</td><td>15-20 min</td><td>Marcar nodos visitados en el grafo a medida que avanzás</td></tr>
+  <tr><td>Preorden</td><td>5-10 min</td><td>El más rápido — hacerlo primero si estás nervioso</td></tr>
+</table>
+</div>
+
+</main>
+<script>
+const s=document.querySelectorAll('[id]'),l=document.querySelectorAll('nav a');
+window.addEventListener('scroll',()=>{
+  let c='';s.forEach(x=>{if(window.scrollY>=x.offsetTop-85)c=x.id});
+  l.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+c)a.classList.add('active')});
+});
+</script>
+</body>
+</html>
